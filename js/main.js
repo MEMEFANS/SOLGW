@@ -1,48 +1,53 @@
-// 移动端菜单
-document.addEventListener('DOMContentLoaded', function() {
+import { initReferral } from './referral.js';
+import { handleSolInput, contribute } from './investment.js';
+
+// DOM 加载完成后执行
+document.addEventListener('DOMContentLoaded', () => {
+    // 初始化投资相关功能
+    const solInput = document.getElementById('solAmount');
+    const investButton = document.getElementById('investButton');
+    
+    if (solInput) {
+        // 添加输入事件监听
+        solInput.addEventListener('input', handleSolInput);
+        // 手动调用一次处理函数进行初始化
+        handleSolInput({ target: solInput });
+    }
+
+    if (investButton) {
+        investButton.addEventListener('click', contribute);
+    }
+
+    // 初始化推荐功能
+    initReferral();
+
+    // 移动端菜单
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.querySelector('.mobile-menu');
-
-    mobileMenuButton.addEventListener('click', function() {
-        mobileMenu.classList.toggle('hidden');
-    });
-
-    // 点击菜单项时关闭菜单
-    const menuItems = mobileMenu.querySelectorAll('a');
-    menuItems.forEach(item => {
-        item.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
+    
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
         });
-    });
+
+        // 点击菜单项时关闭菜单
+        const menuItems = mobileMenu.querySelectorAll('a');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    }
 });
 
 // 滚动时改变导航栏样式
 window.addEventListener('scroll', function() {
     const nav = document.querySelector('nav');
-    if (window.scrollY > 50) {
-        nav.classList.add('bg-opacity-95', 'shadow-lg');
-    } else {
-        nav.classList.remove('bg-opacity-95', 'shadow-lg');
-    }
-});
-
-// 语言切换
-const languageSelect = document.querySelector('select');
-languageSelect.addEventListener('change', function(e) {
-    const lang = e.target.value;
-    // 这里添加语言切换逻辑
-    console.log('Language changed to:', lang);
-});
-
-// 添加平滑滚动
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth'
-            });
+    if (nav) {
+        if (window.scrollY > 0) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
         }
-    });
+    }
 });

@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitcoin Dogs</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://bundle.run/buffer@6.0.3"></script>
-    <script>window.Buffer = buffer.Buffer;</script>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
     <link href="styles.css" rel="stylesheet">
 </head>
 <body class="text-white antialiased">
@@ -136,15 +133,41 @@
                 <div id="contributeForm">
                     <div class="mb-6">
                         <label class="block text-gray-300 mb-2">投资金额 (SOL)</label>
-                        <input type="number" id="solAmount" class="w-full" min="0.1" step="0.1" placeholder="输入 SOL 数量" oninput="updateDsnkAmount()">
+                        <input type="number" id="solAmount" 
+                            class="w-full px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#64E9FF] focus:outline-none focus:border-[#64E9FF] placeholder-gray-600" 
+                            min="0.1" 
+                            step="0.1" 
+                            placeholder="输入 SOL 数量（最小 0.1 SOL）">
                     </div>
                     <div class="mb-6">
                         <label class="block text-gray-300 mb-2">将获得 DSNK</label>
-                        <div class="text-2xl font-bold text-[#64E9FF]">
-                            <span id="dsnkAmount">0</span> DSNK
+                        <div class="flex justify-between items-center">
+                            <div class="text-2xl font-bold text-[#64E9FF]">
+                                <span id="dsnkAmount">0</span> DSNK
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                <span id="investedInfo"></span>
+                            </div>
                         </div>
                     </div>
-                    <button class="w-full bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white py-3 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity" id="contributeButton">
+
+                    <!-- 推荐链接区域 -->
+                    <div class="mb-6 p-4 bg-[#1A0B26] rounded-lg border border-[#8364E8]/30">
+                        <h3 class="text-lg font-semibold text-[#64E9FF] mb-2">推荐奖励</h3>
+                        <p class="text-sm text-gray-400 mb-3">分享您的推荐链接，获得被推荐人投资额的 10% SOL 奖励！</p>
+                        <div class="relative flex items-center">
+                            <input type="text" id="referralLink" readonly
+                                class="flex-1 px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#64E9FF] mr-2 placeholder-gray-600"
+                                placeholder="请先连接钱包生成推荐链接">
+                            <button id="copyReferral" 
+                                class="px-4 py-2 bg-[#8364E8] hover:bg-[#64E9FF] text-white rounded-lg text-sm transition-colors duration-200 whitespace-nowrap">
+                                复制链接
+                            </button>
+                        </div>
+                        <div id="referralStatus" class="text-sm text-[#64E9FF] mt-2 min-h-[20px]"></div>
+                    </div>
+
+                    <button id="investButton" class="w-full bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white py-3 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity">
                         确认私募
                     </button>
                 </div>
@@ -328,194 +351,30 @@
     </main>
 
     <!-- 页脚 -->
-    <footer class="py-8 px-4 border-t border-white/10">
-        <div class="max-w-7xl mx-auto text-center text-gray-400">
+    <footer class="py-8 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="container mx-auto px-4 text-center text-gray-400">
             <p>&copy; 2024 Bitcoin Dogs. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- 加载依赖库 -->
+    <script src="https://bundle.run/buffer@6.0.3"></script>
+    <script>window.Buffer = buffer.Buffer;</script>
+    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
     <script>
-        // 全局函数定义
-        function updateDsnkAmount() {
-            const solAmount = document.getElementById('solAmount').value;
-            const dsnkAmount = document.getElementById('dsnkAmount');
-            if (solAmount && solAmount >= 0) {
-                const dsnkValue = solAmount * 10000; // 1 SOL = 10000 DSNK
-                dsnkAmount.textContent = dsnkValue.toLocaleString();
+        // 确保 Solana Web3 正确加载
+        window.addEventListener('load', function() {
+            if (typeof solanaWeb3 === 'undefined') {
+                console.error('Solana Web3 failed to load');
             } else {
-                dsnkAmount.textContent = '0';
+                console.log('Solana Web3 loaded successfully');
             }
-        }
-
-        async function contribute() {
-            try {
-                // 获取 Phantom 钱包提供者
-                const provider = window.getProvider();
-                if (!provider) {
-                    alert('请先安装 Phantom 钱包!');
-                    return;
-                }
-
-                // 连接钱包
-                try {
-                    const resp = await provider.connect();
-                    console.log('Wallet connected:', resp.publicKey.toString());
-                } catch (err) {
-                    console.error('连接钱包失败:', err);
-                    return;
-                }
-
-                // 检查输入金额
-                const solAmount = document.getElementById('solAmount').value;
-                if (!solAmount || solAmount < 0.1) {
-                    alert('请输入有效的 SOL 数量（最小 0.1 SOL）');
-                    return;
-                }
-
-                // 转账目标地址
-                const PRESALE_WALLET = 'BcXV94bgVxk49Fj5NPBwbN1D9ffxMmm6P7JHnfBsdTJ9';
-
-                try {
-                    // 创建连接 (使用 QuickNode RPC URL)
-                    const connection = new solanaWeb3.Connection('https://black-lingering-fog.solana-mainnet.quiknode.pro/4d7783df09fe07db6ce511d870249fc3eb642683');
-                    
-                    // 创建交易
-                    const transaction = new solanaWeb3.Transaction();
-                    
-                    // 添加转账指令
-                    transaction.add(
-                        solanaWeb3.SystemProgram.transfer({
-                            fromPubkey: new solanaWeb3.PublicKey(provider.publicKey.toString()),
-                            toPubkey: new solanaWeb3.PublicKey(PRESALE_WALLET),
-                            lamports: Math.floor(solAmount * solanaWeb3.LAMPORTS_PER_SOL)
-                        })
-                    );
-
-                    // 获取最新区块哈希
-                    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-                    transaction.recentBlockhash = blockhash;
-                    transaction.feePayer = new solanaWeb3.PublicKey(provider.publicKey.toString());
-
-                    // 发送交易请求
-                    const { signature } = await provider.signAndSendTransaction(transaction);
-                    
-                    // 等待交易确认
-                    const confirmation = await connection.confirmTransaction({
-                        signature,
-                        blockhash,
-                        lastValidBlockHeight
-                    });
-
-                    if (confirmation.value.err) {
-                        throw new Error('交易确认失败');
-                    }
-
-                    console.log('Transaction successful! Signature:', signature);
-                    alert('转账成功！');
-                } catch (err) {
-                    console.error('转账失败:', err);
-                    alert('交易失败: ' + err.message);
-                }
-            } catch (err) {
-                console.error('转账失败:', err);
-                alert('交易失败: ' + err.message);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            window.getProvider = () => {
-                if ('phantom' in window) {
-                    const provider = window.phantom?.solana;
-
-                    if (provider?.isPhantom) {
-                        return provider;
-                    }
-                }
-
-                window.open('https://phantom.app/', '_blank');
-            };
-
-            // 钱包连接状态
-            let walletConnected = false;
-            let walletAddress = '';
-
-            // 显示钱包地址的简短版本
-            function shortenAddress(address) {
-                return address.slice(0, 4) + '...' + address.slice(-4);
-            }
-
-            // 切换钱包下拉菜单
-            function toggleWalletDropdown() {
-                const dropdown = document.getElementById('walletDropdown');
-                dropdown.classList.toggle('hidden');
-            }
-
-            // 连接钱包
-            document.getElementById('navConnectWallet').addEventListener('click', async () => {
-                if (walletConnected) {
-                    toggleWalletDropdown();
-                    return;
-                }
-
-                try {
-                    const provider = window?.solana;
-                    if (!provider) {
-                        alert('请安装 Solana 钱包!');
-                        return;
-                    }
-
-                    const resp = await provider.connect();
-                    walletAddress = resp.publicKey.toString();
-                    walletConnected = true;
-                    
-                    // 更新按钮文本为钱包地址
-                    const connectButton = document.getElementById('navConnectWallet');
-                    connectButton.textContent = shortenAddress(walletAddress);
-                    connectButton.classList.add('connected');
-                } catch (err) {
-                    console.error(err);
-                    alert('连接钱包失败!');
-                }
-            });
-
-            // 断开钱包连接
-            document.getElementById('disconnectWallet').addEventListener('click', async () => {
-                try {
-                    const provider = window?.solana;
-                    if (provider) {
-                        await provider.disconnect();
-                    }
-                    walletConnected = false;
-                    walletAddress = '';
-                    
-                    // 重置按钮文本
-                    const connectButton = document.getElementById('navConnectWallet');
-                    connectButton.textContent = '连接钱包';
-                    connectButton.classList.remove('connected');
-                    
-                    // 隐藏下拉菜单
-                    document.getElementById('walletDropdown').classList.add('hidden');
-                } catch (err) {
-                    console.error(err);
-                    alert('断开连接失败!');
-                }
-            });
-
-            // 点击其他地方时关闭下拉菜单
-            document.addEventListener('click', (event) => {
-                const walletContainer = document.querySelector('.wallet-container');
-                const dropdown = document.getElementById('walletDropdown');
-                
-                if (!walletContainer.contains(event.target) && !dropdown.classList.contains('hidden')) {
-                    dropdown.classList.add('hidden');
-                }
-            });
-
-            // 添加事件监听器
-            document.getElementById('solAmount').addEventListener('input', updateDsnkAmount);
-            document.getElementById('contributeButton').addEventListener('click', contribute);
         });
     </script>
+
+    <!-- 加载应用脚本 -->
+    <script type="module" src="js/wallet.js"></script>
+    <script type="module" src="js/investment.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -7,6 +7,7 @@ const SOFT_CAP = 1000;
 const HARD_CAP = 2000;
 const CURRENT_RAISED = 800;
 const DSNK_PER_SOL = 10000;
+const RPC_URL = 'https://black-lingering-fog.solana-mainnet.quiknode.pro/4d7783df09fe07db6ce511d870249fc3eb642683';
 
 // 检查 Solana 对象是否存在
 function checkSolana() {
@@ -30,7 +31,10 @@ async function connectWallet() {
 
         console.log('尝试连接钱包...');
         // 请求连接钱包
-        const resp = await window.solana.connect();
+        const resp = await window.solana.connect({
+            onlyIfTrusted: true,
+            endpoint: RPC_URL
+        });
         wallet = resp.publicKey.toString();
         
         // 更新UI
