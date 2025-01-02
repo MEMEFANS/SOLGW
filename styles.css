@@ -1,0 +1,1060 @@
+/* 基础变量 */
+:root {
+    --neon-blue: #00f3ff;
+    --neon-purple: #9d00ff;
+    --dark-bg: #0a0a0a;
+    --grid-color: rgba(0, 243, 255, 0.15);
+    --circuit-color: rgba(157, 0, 255, 0.3);
+    --primary: #9333EA;
+    --secondary: #14F195;
+    --dark: #0F0326;
+    --darker: #080213;
+    --light: rgba(255, 255, 255, 0.9);
+    --nebula-1: rgba(147, 51, 234, 0.15);
+    --nebula-2: rgba(20, 241, 149, 0.1);
+}
+
+/* 基础样式 */
+body {
+    background: linear-gradient(135deg, #0c0521 0%, #1a0942 50%, #0c0521 100%);
+    position: relative;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+/* 赛博朋克背景 */
+.cyberpunk-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, #1a0f3c 0%, #000000 100%);
+    overflow: hidden;
+}
+
+/* 霓虹网格 */
+.neon-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(90deg, rgba(255, 0, 128, 0.15) 1px, transparent 1px),
+        linear-gradient(rgba(0, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: perspective(1000px) rotateX(60deg) scale(1.5);
+    transform-origin: center top;
+    animation: gridPulse 8s ease-in-out infinite;
+}
+
+/* 故障效果 */
+.glitch-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(255, 0, 128, 0.1),
+        rgba(0, 255, 255, 0.1)
+    );
+    mix-blend-mode: screen;
+    animation: glitchEffect 0.2s steps(2) infinite;
+}
+
+/* 赛博线条 */
+.cyber-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    opacity: 0.7;
+}
+
+.cyber-line {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom,
+        transparent,
+        #ff0080,
+        #00ffff,
+        transparent
+    );
+    filter: blur(1px);
+    animation: cyberLineScan 4s ease-in-out infinite;
+}
+
+.cyber-line:nth-child(1) {
+    left: 20%;
+    animation-delay: 0s;
+    height: 140%;
+    top: -20%;
+}
+
+.cyber-line:nth-child(2) {
+    left: 50%;
+    animation-delay: -1.5s;
+    height: 160%;
+    top: -30%;
+}
+
+.cyber-line:nth-child(3) {
+    left: 80%;
+    animation-delay: -3s;
+    height: 150%;
+    top: -25%;
+}
+
+/* 六边形图案 */
+.hex-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(
+        circle at center,
+        rgba(0, 255, 255, 0.15) 0%,
+        transparent 70%
+    );
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><path d="M25 2 L48 13 L48 37 L25 48 L2 37 L2 13 Z" fill="black"/></svg>');
+    mask-size: 50px 50px;
+    animation: hexPulse 6s ease-in-out infinite;
+    opacity: 0.8;
+}
+
+/* 数据流 */
+.data-stream {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    perspective: 1000px;
+}
+
+.data-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #00ffff;
+    filter: blur(1px);
+    box-shadow: 
+        0 0 6px #00ffff,
+        0 0 12px #00ffff;
+    animation: dataFlow 3s linear infinite;
+    transform-style: preserve-3d;
+}
+
+.data-particle:nth-child(1) { left: 10%; animation-delay: 0s; transform: translateZ(50px); }
+.data-particle:nth-child(2) { left: 30%; animation-delay: -0.6s; transform: translateZ(-30px); }
+.data-particle:nth-child(3) { left: 50%; animation-delay: -1.2s; transform: translateZ(80px); }
+.data-particle:nth-child(4) { left: 70%; animation-delay: -1.8s; transform: translateZ(-60px); }
+.data-particle:nth-child(5) { left: 90%; animation-delay: -2.4s; transform: translateZ(40px); }
+
+/* 霓虹光晕 */
+.neon-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 30% 20%, rgba(255, 0, 128, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(0, 255, 255, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(128, 0, 255, 0.2) 0%, transparent 60%);
+    filter: blur(40px);
+    animation: glowPulse 8s ease-in-out infinite;
+    mix-blend-mode: screen;
+}
+
+/* 导航栏 */
+nav {
+    padding: 1.5rem 0;
+    position: relative;
+    z-index: 10;
+}
+
+.button-glow {
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    border-radius: 20px;
+    padding: 0.5rem 1.5rem;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.button-glow:hover {
+    background: rgba(0, 243, 255, 0.2);
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+/* 标题样式 */
+.title-glow {
+    color: white;
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 
+        0 0 10px var(--neon-blue),
+        0 0 20px var(--neon-blue),
+        0 0 30px var(--neon-blue);
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* 卡片样式 */
+.feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.feature-title {
+    color: var(--neon-blue);
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.feature-description {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+}
+
+/* 倒计时样式 */
+.countdown-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+}
+
+.countdown-title {
+    color: var(--neon-blue);
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.countdown-item {
+    text-align: center;
+}
+
+.countdown-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.countdown-label {
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.5rem;
+}
+
+/* 私募信息卡片 */
+.info-card {
+    background: rgba(131, 100, 232, 0.05);
+    border: 1px solid rgba(100, 233, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent,
+        rgba(100, 233, 255, 0.2),
+        transparent
+    );
+}
+
+.info-card:hover {
+    background: rgba(131, 100, 232, 0.1);
+    border-color: rgba(100, 233, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.info-card h3 {
+    position: relative;
+    display: inline-block;
+}
+
+.info-card h3::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        rgba(131, 100, 232, 0.5),
+        rgba(100, 233, 255, 0.5)
+    );
+}
+
+/* 进度条动画 */
+.bg-gradient-to-r {
+    background: linear-gradient(to right, #6366f1, #8b5cf6);
+    background-size: 200% 200%;
+    animation: gradientMove 2s ease infinite;
+}
+
+/* 注意事项列表样式 */
+.list-disc.list-inside li {
+    position: relative;
+    padding-left: 0.5rem;
+    line-height: 1.5;
+}
+
+.list-disc.list-inside li:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* 动态背景效果 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, var(--nebula-1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, var(--nebula-2) 0%, transparent 40%);
+    animation: nebulaPulse 8s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 玻璃态效果 */
+.glass-card {
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.36),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 1rem;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: rgba(147, 51, 234, 0.5);
+    box-shadow: 
+        0 12px 40px 0 rgba(147, 51, 234, 0.3),
+        inset 0 0 0 1px rgba(147, 51, 234, 0.2);
+}
+
+/* 渐变文本 */
+.gradient-text {
+    background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+    background-size: 200% 200%;
+    animation: gradientBG 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+    text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+}
+
+.gradient-text::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #8B5CF6, #3B82F6);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.gradient-text:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* 标题特效 */
+h1.gradient-text {
+    position: relative;
+    z-index: 1;
+}
+
+h1.gradient-text::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    filter: blur(20px);
+}
+
+/* 数字样式 */
+.text-blue-400 {
+    text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+}
+
+/* 按钮样式 */
+.button-glow {
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue);
+    transition: all 0.3s ease;
+}
+
+.button-glow:hover {
+    background: rgba(0, 243, 255, 0.2);
+    box-shadow: 0 0 20px var(--neon-blue),
+               0 0 40px var(--neon-blue);
+    transform: translateY(-2px);
+}
+
+.connect-wallet-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    background-size: 200% 200%;
+    animation: gradientBG 3s ease infinite;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.connect-wallet-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shine 3s infinite linear;
+}
+
+.connect-wallet-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(147, 51, 234, 0.3);
+    filter: brightness(1.1);
+}
+
+/* 悬停效果 */
+.hover-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.hover-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.hover-glow:hover::before {
+    left: 100%;
+}
+
+.hover-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(147, 51, 234, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.hover-glow:hover::after {
+    opacity: 1;
+}
+
+/* 按钮悬停效果 */
+.button-glow {
+    position: relative;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.button-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+.button-glow::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6, #6366f1);
+    border-radius: 8px;
+    z-index: -1;
+    animation: gradientMove 2s ease infinite;
+    background-size: 200% 200%;
+}
+
+/* 渐变文字 */
+.gradient-text {
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientMove 2s ease infinite;
+    background-size: 200% 200%;
+}
+
+/* K线图动画 */
+.candlestick-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    perspective: 1000px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.candlestick-chart {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) perspective(1000px) rotateX(45deg) scale(1.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+    height: 300px;
+    padding: 20px;
+}
+
+.candlestick {
+    position: relative;
+    width: 20px;
+    background: #00ff88;
+    animation: candlestickGrow 3s infinite;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.candlestick::before,
+.candlestick::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 2px;
+    background: #00ff88;
+    box-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+}
+
+.candlestick::before {
+    top: 0;
+    height: 10px;
+    transform: translateX(-50%);
+}
+
+.candlestick::after {
+    bottom: 0;
+    height: 10px;
+    transform: translateX(-50%);
+}
+
+.candlestick:nth-child(1) { animation-delay: -0.3s; }
+.candlestick:nth-child(2) { animation-delay: -0.6s; }
+.candlestick:nth-child(3) { animation-delay: -0.9s; }
+.candlestick:nth-child(4) { animation-delay: -1.2s; }
+.candlestick:nth-child(5) { animation-delay: -1.5s; }
+.candlestick:nth-child(6) { animation-delay: -1.8s; }
+.candlestick:nth-child(7) { animation-delay: -2.1s; }
+.candlestick:nth-child(8) { animation-delay: -2.4s; }
+.candlestick:nth-child(9) { animation-delay: -2.7s; }
+.candlestick:nth-child(10) { animation-delay: -3.0s; }
+
+@keyframes candlestickGrow {
+    0% {
+        height: 50px;
+        background: #ff3366;
+    }
+    20% {
+        height: 150px;
+        background: #00ff88;
+    }
+    40% {
+        height: 100px;
+        background: #ff3366;
+    }
+    60% {
+        height: 200px;
+        background: #00ff88;
+    }
+    80% {
+        height: 180px;
+        background: #00ff88;
+    }
+    100% {
+        height: 250px;
+        background: #00ff88;
+    }
+}
+
+/* 动画关键帧定义 */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+}
+
+@keyframes twinkle-fast {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+@keyframes shooting-star {
+    0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(1000px) translateY(300px);
+        opacity: 0;
+    }
+}
+
+@keyframes twinkling {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+}
+
+@keyframes lineMove {
+    0%, 100% {
+        transform: scaleY(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+@keyframes particleFloat {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(10px, -10px);
+    }
+    50% {
+        transform: translate(20px, 0);
+    }
+    75% {
+        transform: translate(10px, 10px);
+    }
+}
+
+@keyframes symbolsMove {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0.1;
+    }
+    50% {
+        transform: translate(-20px, 20px);
+        opacity: 0.2;
+    }
+}
+
+@keyframes gridPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: perspective(1000px) rotateX(60deg) scale(1.5) translateY(0);
+    }
+    50% {
+        opacity: 0.5;
+        transform: perspective(1000px) rotateX(60deg) scale(1.5) translateY(-30px);
+    }
+}
+
+@keyframes glitchEffect {
+    0%, 100% {
+        transform: translate(0);
+        opacity: 0.1;
+    }
+    50% {
+        transform: translate(3px, 2px);
+        opacity: 0.2;
+    }
+}
+
+@keyframes cyberLineScan {
+    0% {
+        transform: translateY(-100%) scaleY(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(0) scaleY(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100%) scaleY(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes hexPulse {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1) rotate(30deg);
+    }
+}
+
+@keyframes dataFlow {
+    0% {
+        transform: translateY(-100vh) scale(1);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(0) scale(2);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+/* 移除旧的样式 */
+.finance-background,
+.grid-overlay,
+.glow-lines,
+.floating-particles,
+.crypto-symbols {
+    display: none;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+    .title-glow {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .countdown-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .countdown-number {
+        font-size: 2rem;
+    }
+    
+    .glass-card {
+        margin: 1rem 0;
+    }
+    .gradient-text {
+        font-size: 90%;
+    }
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--darker);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, var(--secondary), var(--primary));
+}
+
+/* 文本选择 */
+::selection {
+    background: var(--primary);
+    color: white;
+}
+
+/* 输入框样式 */
+input[type="number"] {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 18px;
+    color: white;
+    background: rgba(19, 9, 27, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+/* 移除数字输入框的上下箭头 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+#solAmount {
+    background: rgba(19, 9, 27, 0.5);
+    border: 1px solid rgba(100, 233, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.125rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+#solAmount:focus {
+    outline: none;
+    border-color: rgba(100, 233, 255, 0.3);
+    box-shadow: 0 0 0 2px rgba(100, 233, 255, 0.1);
+}
+
+#solAmount:hover {
+    border-color: rgba(100, 233, 255, 0.2);
+}
+
+#solAmount::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* 钱包下拉菜单样式 */
+.wallet-container {
+    position: relative;
+}
+
+.wallet-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: rgba(19, 9, 27, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.wallet-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    color: #ff3366;
+    text-align: left;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.wallet-dropdown-item:hover {
+    background: rgba(255, 51, 102, 0.1);
+}
+
+/* 连接状态的按钮样式 */
+#navConnectWallet.connected {
+    background: rgba(19, 9, 27, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+
+#navConnectWallet.connected:hover {
+    background: rgba(19, 9, 27, 0.95);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 卡片容器样式 */
+.card-container {
+    background: rgba(19, 9, 27, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.countdown-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.countdown-item {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.countdown-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* 私募板块样式 */
+.info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #8364E8, #64E9FF);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* 分隔线样式 */
+.divider-line {
+    height: 1px;
+    background: linear-gradient(to right, 
+        rgba(255, 255, 255, 0) 0%,
+        rgba(131, 100, 232, 0.3) 25%,
+        rgba(100, 233, 255, 0.5) 50%,
+        rgba(131, 100, 232, 0.3) 75%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    position: relative;
+}
+
+.divider-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, 
+        transparent,
+        rgba(100, 233, 255, 0.2) 50%,
+        transparent
+    );
+    filter: blur(1px);
+}

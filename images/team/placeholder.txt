@@ -1,0 +1,5 @@
+This is a placeholder file for the team images directory. Please add team member photos here with the following names:
+- ceo.jpg
+- cto.jpg
+- art.jpg
+- marketing.jpg

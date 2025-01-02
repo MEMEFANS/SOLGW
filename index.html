@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Dogs</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://bundle.run/buffer@6.0.3"></script>
+    <script>window.Buffer = buffer.Buffer;</script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body class="text-white antialiased">
+ <!-- 赛博朋克背景 -->
+<div class="cyberpunk-background">
+    <div class="neon-grid"></div>
+    <div class="glitch-overlay"></div>
+    <div class="cyber-lines">
+        <div class="cyber-line"></div>
+        <div class="cyber-line"></div>
+        <div class="cyber-line"></div>
+    </div>
+    <div class="hex-pattern"></div>
+    <div class="data-stream">
+        <div class="data-particle"></div>
+        <div class="data-particle"></div>
+        <div class="data-particle"></div>
+        <div class="data-particle"></div>
+        <div class="data-particle"></div>
+    </div>
+    <div class="neon-glow"></div>
+</div>
+<!-- K线图动画 -->
+<div class="candlestick-container">
+    <div class="candlestick-chart">
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+        <div class="candlestick"></div>
+    </div>
+</div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#13091B]/80 backdrop-blur-xl border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <img class="h-10 w-auto" src="./logo.png" alt="Bitcoin Dogs">
+                </div>
+                <div class="flex items-center">
+                    <div class="wallet-container relative">
+                        <button id="navConnectWallet" class="button-glow text-white px-6 py-2 rounded-lg">
+                            连接钱包
+                        </button>
+                        <div id="walletDropdown" class="wallet-dropdown hidden">
+                            <button id="disconnectWallet" class="wallet-dropdown-item">
+                                断开连接
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-4 pt-32 pb-8">
+        <!-- 倒计时和私募表单卡片 -->
+        <div class="card-container backdrop-blur-xl bg-[#13091B]/40 border border-white/10 rounded-2xl p-8 max-w-2xl mx-auto">
+            <div class="countdown-section">
+                <h2 class="text-2xl font-bold text-[#8364E8] mb-6">距离私募结束还有</h2>
+                <div class="grid grid-cols-4 gap-4 text-center">
+                    <div class="countdown-item">
+                        <div id="days" class="text-4xl font-bold text-[#64E9FF]">30</div>
+                        <div class="text-sm text-gray-400">天</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="hours" class="text-4xl font-bold text-[#64E9FF]">00</div>
+                        <div class="text-sm text-gray-400">时</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="minutes" class="text-4xl font-bold text-[#64E9FF]">00</div>
+                        <div class="text-sm text-gray-400">分</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="seconds" class="text-4xl font-bold text-[#64E9FF]">00</div>
+                        <div class="text-sm text-gray-400">秒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分隔线 -->
+            <div class="divider-line my-8"></div>
+
+            <div class="contribute-section">
+                <h2 class="text-2xl font-bold text-[#8364E8] mb-4">参与私募</h2>
+                
+                <!-- 私募信息 -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="info-card">
+                        <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">私募价格</h3>
+                        <p class="text-gray-300">1 SOL = 10000 DSNK</p>
+                    </div>
+                    <div class="info-card">
+                        <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">最低投资</h3>
+                        <p class="text-gray-300">0.1 SOL</p>
+                    </div>
+                    <div class="info-card">
+                        <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">总发行量</h3>
+                        <p class="text-gray-300">100,000,000 DSNK</p>
+                    </div>
+                    <div class="info-card">
+                        <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">私募比例</h3>
+                        <p class="text-gray-300">10%</p>
+                    </div>
+                </div>
+
+                <!-- 进度条 -->
+                <div class="mb-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-400">已募集</span>
+                        <span class="text-sm text-gray-400">500,000 / 1,000,000 SOL</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- 投资表单 -->
+                <div id="contributeForm">
+                    <div class="mb-6">
+                        <label class="block text-gray-300 mb-2">投资金额 (SOL)</label>
+                        <input type="number" id="solAmount" class="w-full" min="0.1" step="0.1" placeholder="输入 SOL 数量" oninput="updateDsnkAmount()">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-300 mb-2">将获得 DSNK</label>
+                        <div class="text-2xl font-bold text-[#64E9FF]">
+                            <span id="dsnkAmount">0</span> DSNK
+                        </div>
+                    </div>
+                    <button class="w-full bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white py-3 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity" id="contributeButton">
+                        确认私募
+                    </button>
+                </div>
+
+                <!-- 注意事项 -->
+                <div class="mt-6 text-sm text-gray-400">
+                    <h4 class="font-semibold mb-2">注意事项：</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>请确保您的钱包中有足够的 SOL</li>
+                        <li>DSNK 代币将在 IDO 结束后自动发放到您的钱包</li>
+                        <li>私募期间投资的 SOL 将被锁定，无法提取</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 游戏特色 -->
+    <section class="py-12 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 gradient-text">
+                游戏特色
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-card hover-glow p-8">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">PVP 对战</h3>
+                    <p class="text-gray-300">多人实时对战，策略与技巧的完美结合</p>
+                </div>
+                <div class="glass-card hover-glow p-8">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 资产</h3>
+                    <p class="text-gray-300">独特的游戏道具和角色，以 NFT 形式存在</p>
+                </div>
+                <div class="glass-card hover-glow p-8">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">Play to Earn</h3>
+                    <p class="text-gray-300">边玩边赚，打造可持续的游戏经济系统</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 代币分配 -->
+    <section class="py-10 px-4 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">代币分配</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">私募分配</h3>
+                    <p class="text-gray-300">30% 用于私募</p>
+                </div>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">流动性</h3>
+                    <p class="text-gray-300">40% 用于提供流动性</p>
+                </div>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">团队保留</h3>
+                    <p class="text-gray-300">30% 团队持有（锁仓）</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 路线图 -->
+    <section class="py-10 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">发展路线</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">第一阶段</h3>
+                    <ul class="text-gray-300 space-y-2">
+                        <li>• 完成私募</li>
+                        <li>• 上线DEX</li>
+                        <li>• 开启流动性挖矿</li>
+                    </ul>
+                </div>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">第二阶段</h3>
+                    <ul class="text-gray-300 space-y-2">
+                        <li>• 游戏开发</li>
+                        <li>• NFT设计</li>
+                        <li>• 社区建设</li>
+                    </ul>
+                </div>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">第三阶段</h3>
+                    <ul class="text-gray-300 space-y-2">
+                        <li>• 游戏测试</li>
+                        <li>• NFT空投</li>
+                        <li>• 市场推广</li>
+                    </ul>
+                </div>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">第四阶段</h3>
+                    <ul class="text-gray-300 space-y-2">
+                        <li>• 游戏上线</li>
+                        <li>• 跨链整合</li>
+                        <li>• 生态扩展</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心团队 -->
+    <section class="py-10 px-4 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">核心团队</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="glass-card hover-glow p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2">首席执行官</h3>
+                    <p class="text-sm text-white mb-2">John Doe</p>
+                    <p class="text-gray-400">连续创业者，Web3领域专家</p>
+                </div>
+                <div class="glass-card hover-glow p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2">技术总监</h3>
+                    <p class="text-sm text-white mb-2">Mike Chen</p>
+                    <p class="text-gray-400">前Google工程师，区块链专家</p>
+                </div>
+                <div class="glass-card hover-glow p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2">产品总监</h3>
+                    <p class="text-sm text-white mb-2">Sarah Wang</p>
+                    <p class="text-gray-400">资深游戏制作人</p>
+                </div>
+                <div class="glass-card hover-glow p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2">市场总监</h3>
+                    <p class="text-sm text-white mb-2">Lisa Zhang</p>
+                    <p class="text-gray-400">营销专家，社区运营</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 常见问题 -->
+    <section class="py-10 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">常见问题</h2>
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">如何开始游戏？</h3>
+                    <p class="text-gray-300">连接您的 Solana 钱包，购买 DSNK 代币即可开始游戏</p>
+                </div>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">游戏收益如何分配？</h3>
+                    <p class="text-gray-300">游戏内获得的收益将直接发放到您的钱包地址</p>
+                </div>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 有什么用途？</h3>
+                    <p class="text-gray-300">NFT 可用于游戏内的角色升级、装备强化，也可以交易</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 社区活动 -->
+    <section class="py-10 px-4 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">加入社区</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <a href="#" class="glass-card hover-glow p-6 text-center">
+                    <h3 class="text-xl font-bold text-blue-400">Discord</h3>
+                    <p class="text-gray-300 mt-2">加入讨论</p>
+                </a>
+                <a href="#" class="glass-card hover-glow p-6 text-center">
+                    <h3 class="text-xl font-bold text-blue-400">Twitter</h3>
+                    <p class="text-gray-300 mt-2">关注动态</p>
+                </a>
+                <a href="#" class="glass-card hover-glow p-6 text-center">
+                    <h3 class="text-xl font-bold text-blue-400">Telegram</h3>
+                    <p class="text-gray-300 mt-2">即时交流</p>
+                </a>
+                <a href="#" class="glass-card hover-glow p-6 text-center">
+                    <h3 class="text-xl font-bold text-blue-400">Medium</h3>
+                    <p class="text-gray-300 mt-2">深度文章</p>
+                </a>
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="py-8 px-4 border-t border-white/10">
+        <div class="max-w-7xl mx-auto text-center text-gray-400">
+            <p>&copy; 2024 Bitcoin Dogs. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 全局函数定义
+        function updateDsnkAmount() {
+            const solAmount = document.getElementById('solAmount').value;
+            const dsnkAmount = document.getElementById('dsnkAmount');
+            if (solAmount && solAmount >= 0) {
+                const dsnkValue = solAmount * 10000; // 1 SOL = 10000 DSNK
+                dsnkAmount.textContent = dsnkValue.toLocaleString();
+            } else {
+                dsnkAmount.textContent = '0';
+            }
+        }
+
+        async function contribute() {
+            try {
+                // 获取 Phantom 钱包提供者
+                const provider = window.getProvider();
+                if (!provider) {
+                    alert('请先安装 Phantom 钱包!');
+                    return;
+                }
+
+                // 连接钱包
+                try {
+                    const resp = await provider.connect();
+                    console.log('Wallet connected:', resp.publicKey.toString());
+                } catch (err) {
+                    console.error('连接钱包失败:', err);
+                    return;
+                }
+
+                // 检查输入金额
+                const solAmount = document.getElementById('solAmount').value;
+                if (!solAmount || solAmount < 0.1) {
+                    alert('请输入有效的 SOL 数量（最小 0.1 SOL）');
+                    return;
+                }
+
+                // 转账目标地址
+                const PRESALE_WALLET = 'BcXV94bgVxk49Fj5NPBwbN1D9ffxMmm6P7JHnfBsdTJ9';
+
+                try {
+                    // 创建连接 (使用 QuickNode RPC URL)
+                    const connection = new solanaWeb3.Connection('https://black-lingering-fog.solana-mainnet.quiknode.pro/4d7783df09fe07db6ce511d870249fc3eb642683');
+                    
+                    // 创建交易
+                    const transaction = new solanaWeb3.Transaction();
+                    
+                    // 添加转账指令
+                    transaction.add(
+                        solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: new solanaWeb3.PublicKey(provider.publicKey.toString()),
+                            toPubkey: new solanaWeb3.PublicKey(PRESALE_WALLET),
+                            lamports: Math.floor(solAmount * solanaWeb3.LAMPORTS_PER_SOL)
+                        })
+                    );
+
+                    // 获取最新区块哈希
+                    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+                    transaction.recentBlockhash = blockhash;
+                    transaction.feePayer = new solanaWeb3.PublicKey(provider.publicKey.toString());
+
+                    // 发送交易请求
+                    const { signature } = await provider.signAndSendTransaction(transaction);
+                    
+                    // 等待交易确认
+                    const confirmation = await connection.confirmTransaction({
+                        signature,
+                        blockhash,
+                        lastValidBlockHeight
+                    });
+
+                    if (confirmation.value.err) {
+                        throw new Error('交易确认失败');
+                    }
+
+                    console.log('Transaction successful! Signature:', signature);
+                    alert('转账成功！');
+                } catch (err) {
+                    console.error('转账失败:', err);
+                    alert('交易失败: ' + err.message);
+                }
+            } catch (err) {
+                console.error('转账失败:', err);
+                alert('交易失败: ' + err.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.getProvider = () => {
+                if ('phantom' in window) {
+                    const provider = window.phantom?.solana;
+
+                    if (provider?.isPhantom) {
+                        return provider;
+                    }
+                }
+
+                window.open('https://phantom.app/', '_blank');
+            };
+
+            // 钱包连接状态
+            let walletConnected = false;
+            let walletAddress = '';
+
+            // 显示钱包地址的简短版本
+            function shortenAddress(address) {
+                return address.slice(0, 4) + '...' + address.slice(-4);
+            }
+
+            // 切换钱包下拉菜单
+            function toggleWalletDropdown() {
+                const dropdown = document.getElementById('walletDropdown');
+                dropdown.classList.toggle('hidden');
+            }
+
+            // 连接钱包
+            document.getElementById('navConnectWallet').addEventListener('click', async () => {
+                if (walletConnected) {
+                    toggleWalletDropdown();
+                    return;
+                }
+
+                try {
+                    const provider = window?.solana;
+                    if (!provider) {
+                        alert('请安装 Solana 钱包!');
+                        return;
+                    }
+
+                    const resp = await provider.connect();
+                    walletAddress = resp.publicKey.toString();
+                    walletConnected = true;
+                    
+                    // 更新按钮文本为钱包地址
+                    const connectButton = document.getElementById('navConnectWallet');
+                    connectButton.textContent = shortenAddress(walletAddress);
+                    connectButton.classList.add('connected');
+                } catch (err) {
+                    console.error(err);
+                    alert('连接钱包失败!');
+                }
+            });
+
+            // 断开钱包连接
+            document.getElementById('disconnectWallet').addEventListener('click', async () => {
+                try {
+                    const provider = window?.solana;
+                    if (provider) {
+                        await provider.disconnect();
+                    }
+                    walletConnected = false;
+                    walletAddress = '';
+                    
+                    // 重置按钮文本
+                    const connectButton = document.getElementById('navConnectWallet');
+                    connectButton.textContent = '连接钱包';
+                    connectButton.classList.remove('connected');
+                    
+                    // 隐藏下拉菜单
+                    document.getElementById('walletDropdown').classList.add('hidden');
+                } catch (err) {
+                    console.error(err);
+                    alert('断开连接失败!');
+                }
+            });
+
+            // 点击其他地方时关闭下拉菜单
+            document.addEventListener('click', (event) => {
+                const walletContainer = document.querySelector('.wallet-container');
+                const dropdown = document.getElementById('walletDropdown');
+                
+                if (!walletContainer.contains(event.target) && !dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            // 添加事件监听器
+            document.getElementById('solAmount').addEventListener('input', updateDsnkAmount);
+            document.getElementById('contributeButton').addEventListener('click', contribute);
+        });
+    </script>
+</body>
+</html>

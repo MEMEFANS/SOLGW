@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Dogs</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
+    <style>
+        /* 基础样式 */
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #9d00ff;
+            --dark-bg: #0a0a0a;
+            --grid-color: rgba(0, 243, 255, 0.15);
+            --circuit-color: rgba(157, 0, 255, 0.3);
+        }
+
+        /* 背景基础 */
+        body {
+            background: linear-gradient(to bottom,
+                var(--dark-bg),
+                #1a1a2e,
+                #16213e
+            );
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 科技网格背景 */
+        .tech-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transform: perspective(1000px) rotateX(60deg);
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        /* 电路板效果 */
+        .circuit-board {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 49%, var(--circuit-color) 50%, transparent 51%) 0 0 / 30px 30px,
+                linear-gradient(0deg, transparent 49%, var(--circuit-color) 50%, transparent 51%) 0 0 / 30px 30px;
+            opacity: 0.4;
+            animation: circuitPulse 4s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        /* 发光线条 */
+        .glow-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .glow-line {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: var(--neon-blue);
+            opacity: 0;
+            filter: blur(1px);
+            animation: glowLineMove 3s linear infinite;
+        }
+
+        .glow-line:nth-child(1) { left: 20%; animation-delay: 0s; }
+        .glow-line:nth-child(2) { left: 40%; animation-delay: 1s; }
+        .glow-line:nth-child(3) { left: 60%; animation-delay: 2s; }
+        .glow-line:nth-child(4) { left: 80%; animation-delay: 1.5s; }
+
+        /* 脉冲圆环 */
+        .pulse-rings {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            border: 2px solid var(--neon-blue);
+            border-radius: 50%;
+            animation: pulseRing 4s ease-out infinite;
+            opacity: 0;
+        }
+
+        .pulse-ring:nth-child(1) { width: 100px; height: 100px; animation-delay: 0s; }
+        .pulse-ring:nth-child(2) { width: 200px; height: 200px; animation-delay: 1s; }
+        .pulse-ring:nth-child(3) { width: 300px; height: 300px; animation-delay: 2s; }
+
+        /* 数据流 */
+        .data-streams {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .data-stream {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, 
+                transparent,
+                var(--neon-purple),
+                transparent
+            );
+            opacity: 0.6;
+            animation: dataStreamFall 2s linear infinite;
+        }
+
+        /* 霓虹光效果 */
+        .neon-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%,
+                rgba(0, 243, 255, 0.1) 0%,
+                rgba(157, 0, 255, 0.1) 30%,
+                transparent 70%
+            );
+            filter: blur(30px);
+            opacity: 0.6;
+            z-index: 6;
+        }
+
+        /* 动画关键帧 */
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes glowLineMove {
+            0% { transform: translateY(-100%); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(0.3); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        @keyframes dataStreamFall {
+            0% { transform: translateY(-100%) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(100%) translateX(20px); opacity: 0; }
+        }
+
+        /* 主内容区域样式 */
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 文本发光效果 */
+        .text-glow {
+            text-shadow: 0 0 10px var(--neon-blue),
+                         0 0 20px var(--neon-blue);
+            color: #fff;
+        }
+
+        /* 按钮发光效果 */
+        .button-glow {
+            position: relative;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            transition: all 0.3s ease;
+        }
+
+        .button-glow:hover {
+            background: rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 20px var(--neon-blue),
+                       0 0 40px var(--neon-blue);
+        }
+
+        /* 基础样式 */
+        :root {
+            --primary: #9333EA;
+            --secondary: #14F195;
+            --dark: #0F0326;
+            --darker: #080213;
+            --light: rgba(255, 255, 255, 0.9);
+            --nebula-1: rgba(147, 51, 234, 0.15);
+            --nebula-2: rgba(20, 241, 149, 0.1);
+        }
+
+        /* 背景基础 */
+        body {
+            background: linear-gradient(-45deg, 
+                var(--dark),
+                #1A0454,
+                #170B24,
+                #2A0454
+            );
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 星云效果 */
+        .nebula-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .nebula {
+            position: absolute;
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, 
+                rgba(147, 51, 234, 0.2) 0%,
+                rgba(20, 241, 149, 0.1) 30%,
+                transparent 70%
+            );
+            filter: blur(60px);
+            opacity: 0.3;
+            mix-blend-mode: screen;
+        }
+        .nebula:nth-child(1) {
+            top: 20%;
+            left: 30%;
+            animation: nebulaPulse 20s ease-in-out infinite;
+        }
+        .nebula:nth-child(2) {
+            top: 60%;
+            left: 70%;
+            animation: nebulaPulse 25s ease-in-out infinite reverse;
+        }
+
+        /* 宇宙尘埃 */
+        .cosmic-dust {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 40%, var(--cosmic-dust) 0%, transparent 60%),
+                radial-gradient(circle at 70% 60%, var(--cosmic-dust) 0%, transparent 60%);
+            animation: cosmicDust 30s linear infinite;
+            opacity: 0.5;
+            z-index: 2;
+        }
+
+        /* 星系效果 */
+        .galaxy {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: 
+                radial-gradient(circle, 
+                    rgba(147, 51, 234, 0.2) 0%,
+                    rgba(20, 241, 149, 0.1) 30%,
+                    transparent 70%
+                );
+            filter: blur(40px);
+            animation: galaxyRotate 30s linear infinite;
+            z-index: 1;
+            opacity: 0.3;
+            mix-blend-mode: screen;
+        }
+
+        /* 能量脉冲 */
+        .energy-pulse {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(20, 241, 149, 0.1) 0%, transparent 50%);
+            animation: energyPulse 8s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 星星效果增强 */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: starTwinkle 3s ease-in-out infinite;
+            box-shadow: 
+                0 0 5px rgba(255, 255, 255, 0.8),
+                0 0 10px rgba(255, 255, 255, 0.4),
+                0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        .star::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+            transform: translate(-50%, -50%);
+            opacity: 0.3;
+        }
+
+        /* 流星效果增强 */
+        .meteor {
+            position: absolute;
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0.8),
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            animation: meteorMove 3s linear infinite;
+            box-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.8),
+                0 0 20px rgba(255, 255, 255, 0.4);
+        }
+        .meteor::before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 0;
+        }
+
+        /* 粒子效果增强 */
+        .particle {
+            position: absolute;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.3;
+            animation: particleMove 20s ease-in-out infinite;
+            box-shadow: 
+                0 0 30px rgba(147, 51, 234, 0.3),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            mix-blend-mode: screen;
+        }
+        .particle::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        /* 网格背景增强 */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200%;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            transform: perspective(1000px) rotateX(60deg);
+            transform-origin: center top;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.7;
+        }
+
+        /* 光晕效果增强 */
+        .glow-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, 
+                rgba(147, 51, 234, 0.1) 0%,
+                rgba(20, 241, 149, 0.05) 30%,
+                transparent 70%
+            );
+            transform: translate(-50%, -50%);
+            filter: blur(20px);
+            pointer-events: none;
+            z-index: 1;
+            animation: nebulaPulse 10s ease-in-out infinite;
+        }
+
+        /* 鼠标跟随效果 */
+        .cursor-glow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            pointer-events: none;
+            z-index: 9999;
+            background: radial-gradient(circle, 
+                rgba(147, 51, 234, 0.15) 0%,
+                transparent 70%
+            );
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        /* 基础样式增强 */
+        :root {
+            --primary: #9333EA;
+            --secondary: #14F195;
+            --dark: #0F0326;
+            --darker: #080213;
+            --light: rgba(255, 255, 255, 0.9);
+            --nebula-1: rgba(147, 51, 234, 0.15);
+            --nebula-2: rgba(20, 241, 149, 0.1);
+        }
+
+        /* 背景样式增强 */
+        body {
+            background: linear-gradient(-45deg, 
+                var(--dark),
+                #1A0454,
+                #170B24,
+                #2A0454
+            );
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 动态背景效果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, var(--nebula-1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, var(--nebula-2) 0%, transparent 40%);
+            animation: nebulaPulse 8s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 星空效果 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+        .star:nth-child(1) { top: 10%; left: 20%; width: 2px; height: 2px; animation-delay: 0s; }
+        .star:nth-child(2) { top: 30%; left: 40%; width: 1px; height: 1px; animation-delay: 0.5s; }
+        .star:nth-child(3) { top: 50%; left: 60%; width: 2px; height: 2px; animation-delay: 1s; }
+        .star:nth-child(4) { top: 70%; left: 80%; width: 1px; height: 1px; animation-delay: 1.5s; }
+        .star:nth-child(5) { top: 20%; left: 90%; width: 2px; height: 2px; animation-delay: 2s; }
+        .star:nth-child(6) { top: 40%; left: 10%; width: 1px; height: 1px; animation-delay: 2.5s; }
+        .star:nth-child(7) { top: 60%; left: 30%; width: 2px; height: 2px; animation-delay: 3s; }
+        .star:nth-child(8) { top: 80%; left: 50%; width: 1px; height: 1px; animation-delay: 3.5s; }
+
+        /* 粒子效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .particle {
+            position: absolute;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            filter: blur(1px);
+            opacity: 0.3;
+            animation: particleMove 20s ease-in-out infinite;
+        }
+        .particle:nth-child(1) { top: 15%; left: 25%; width: 100px; height: 100px; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 45%; left: 65%; width: 150px; height: 150px; animation-delay: 5s; }
+        .particle:nth-child(3) { top: 75%; left: 35%; width: 120px; height: 120px; animation-delay: 10s; }
+
+        /* 网格背景 */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            transform: perspective(1000px) rotateX(60deg);
+            transform-origin: center top;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 光晕效果 */
+        .glow-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, 
+                rgba(147, 51, 234, 0.1) 0%,
+                rgba(20, 241, 149, 0.05) 30%,
+                transparent 70%
+            );
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+            animation: nebulaPulse 10s ease-in-out infinite;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+        }
+
+        /* 文本选择样式 */
+        ::selection {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 增强的玻璃态效果 */
+        .glass-card {
+            background: rgba(26, 26, 26, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.36),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(147, 51, 234, 0.5);
+            box-shadow: 
+                0 12px 40px 0 rgba(147, 51, 234, 0.3),
+                inset 0 0 0 1px rgba(147, 51, 234, 0.2);
+        }
+
+        /* 渐变文本效果增强 */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-size: 200% 200%;
+            animation: gradientBG 3s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            display: inline-block;
+        }
+        .gradient-text::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        .gradient-text:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* 按钮样式增强 */
+        .connect-wallet-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-size: 200% 200%;
+            animation: gradientBG 3s ease infinite;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .connect-wallet-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shine 3s infinite linear;
+        }
+        .connect-wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(147, 51, 234, 0.3);
+            filter: brightness(1.1);
+        }
+
+        /* 卡片悬停效果增强 */
+        .hover-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        .hover-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+        .hover-glow:hover::before {
+            left: 100%;
+        }
+        .hover-glow::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(147, 51, 234, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .hover-glow:hover::after {
+            opacity: 1;
+        }
+
+        /* 导航栏链接效果 */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s ease;
+        }
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        .nav-link:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* 图标悬停效果 */
+        .icon-hover {
+            transition: all 0.3s ease;
+        }
+        .icon-hover:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        /* 页面加载动画 */
+        .page-transition {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式布局优化 */
+        @media (max-width: 768px) {
+            .glass-card {
+                margin: 1rem 0;
+            }
+            .nav-link {
+                padding: 0.25rem 0.5rem;
+            }
+            .gradient-text {
+                font-size: 90%;
+            }
+        }
+    </style>
+
+    <!-- 添加字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="text-white antialiased">
+    <!-- 背景元素 -->
+    <div class="tech-grid"></div>
+    <div class="circuit-board"></div>
+    <div class="neon-glow"></div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-white/10 bg-[#0F0326]/80">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <img class="h-10 w-auto" src="./logo.png" alt="Logo">
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button id="navConnectWallet" class="button-glow text-white px-4 py-2 rounded-lg">
+                        连接钱包
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="relative">
+        <!-- Hero Section -->
+        <section class="pt-20 pb-10 px-4">
+            <div class="max-w-7xl mx-auto text-center">
+                <h1 class="text-4xl sm:text-6xl font-bold mb-8 text-glow">
+                    Bitcoin Dogs
+                </h1>
+                <p class="text-xl sm:text-2xl mb-12 text-gray-300">
+                    创新的Web3游戏体验
+                </p>
+            </div>
+        </section>
+
+        <!-- 游戏特色部分 -->
+        <section class="py-12 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-glow">
+                    游戏特色
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">PVP 对战</h3>
+                        <p class="text-gray-300">多人实时对战，策略与技巧的完美结合，让每一场比赛都充满挑战</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 资产</h3>
+                        <p class="text-gray-300">独特的游戏道具和角色，以 NFT 形式存在，真正实现资产数字化</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">Play to Earn</h3>
+                        <p class="text-gray-300">边玩边赚，通过游戏获得代币奖励，打造可持续的游戏经济系统</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 代币分配 -->
+        <section class="tokenomics-section">
+            <h2 class="tokenomics-title">代币分配</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="tokenomics-card">
+                    <h3>私募分配</h3>
+                    <p>30% 用于私募</p>
+                </div>
+                <div class="tokenomics-card">
+                    <h3>流动性</h3>
+                    <p>40% 用于提供流动性</p>
+                </div>
+                <div class="tokenomics-card">
+                    <h3>团队保留</h3>
+                    <p>30% 团队持有（锁仓）</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心团队 -->
+        <section class="team-section py-12">
+            <h2 class="title-glow" style="font-size: 2.5rem;">核心团队</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mt-12">
+                <div class="feature-card">
+                    <h3 class="feature-title">CEO</h3>
+                    <p class="feature-description">区块链行业资深从业者，拥有10年游戏开发经验</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">CTO</h3>
+                    <p class="feature-description">前Google工程师，精通智能合约开发</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">产品总监</h3>
+                    <p class="feature-description">资深游戏策划，专注Web3游戏设计</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">市场总监</h3>
+                    <p class="feature-description">拥有丰富的区块链项目运营经验</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section class="faq-section py-12">
+            <h2 class="title-glow" style="font-size: 2.5rem;">常见问题</h2>
+            <div class="max-w-3xl mx-auto space-y-6 mt-12">
+                <div class="feature-card">
+                    <h3 class="feature-title">如何开始游戏？</h3>
+                    <p class="feature-description">连接钱包后即可开始游戏，新手将获得一只初始狗狗NFT</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">如何赚取收益？</h3>
+                    <p class="feature-description">参与PVP对战获得代币奖励，培育稀有狗狗NFT可获得额外收益</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">代币用途是什么？</h3>
+                    <p class="feature-description">用于游戏内交易、培育狗狗、参与治理投票等多个场景</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 社区活动 -->
+        <section class="community-section py-12">
+            <h2 class="title-glow" style="font-size: 2.5rem;">加入社区</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mt-12">
+                <div class="feature-card">
+                    <h3 class="feature-title">Discord</h3>
+                    <p class="feature-description">加入Discord参与社区讨论</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Twitter</h3>
+                    <p class="feature-description">关注Twitter获取最新资讯</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Telegram</h3>
+                    <p class="feature-description">加入Telegram群组交流</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Medium</h3>
+                    <p class="feature-description">阅读Medium了解项目动态</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 倒计时区域 -->
+        <section class="py-10 px-4">
+            <div class="max-w-3xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
+                <h2 class="text-2xl font-bold text-center mb-8 text-glow">距离私募开始还有</h2>
+                <div class="grid grid-cols-4 gap-4 text-center">
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <span id="days" class="text-3xl font-bold block">00</span>
+                        <span class="text-sm text-gray-400">天</span>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <span id="hours" class="text-3xl font-bold block">00</span>
+                        <span class="text-sm text-gray-400">时</span>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <span id="minutes" class="text-3xl font-bold block">00</span>
+                        <span class="text-sm text-gray-400">分</span>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <span id="seconds" class="text-3xl font-bold block">00</span>
+                        <span class="text-sm text-gray-400">秒</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 私募表单 -->
+        <section id="contributeForm" class="py-10 px-4 hidden">
+            <div class="max-w-3xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
+                <h2 class="text-2xl font-bold text-center mb-8 text-glow">参与私募</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">投资金额 (SOL)</label>
+                        <input type="number" id="solAmount" min="0.1" step="0.1"
+                            class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white"
+                            placeholder="输入 SOL 数量" oninput="updateDsnkAmount()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">将获得 DSNK</label>
+                        <div class="bg-white/10 border border-white/20 rounded-lg px-4 py-2">
+                            <span id="dsnkAmount" class="text-xl font-bold">0</span>
+                            <span class="text-gray-400 ml-2">DSNK</span>
+                        </div>
+                    </div>
+                    <button onclick="contribute()"
+                        class="button-glow w-full text-white py-3 rounded-lg text-lg font-semibold">
+                        确认私募
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 代币分配 -->
+        <section class="py-10 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12 text-glow">代币分配</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4">私募分配</h3>
+                        <p class="text-gray-300">30% 用于私募</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4">流动性</h3>
+                        <p class="text-gray-300">40% 用于提供流动性</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4">团队保留</h3>
+                        <p class="text-gray-300">30% 团队持有（锁仓）</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 路线图 -->
+        <section class="py-10 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12 text-glow">发展路线</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4">第一阶段</h3>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• 完成私募</li>
+                            <li>• 上线DEX</li>
+                            <li>• 开启流动性挖矿</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4">第二阶段</h3>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• 游戏开发</li>
+                            <li>• NFT设计</li>
+                            <li>• 社区建设</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4">第三阶段</h3>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• 游戏测试</li>
+                            <li>• NFT空投</li>
+                            <li>• 市场推广</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4">第四阶段</h3>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• 游戏上线</li>
+                            <li>• 跨链整合</li>
+                            <li>• 生态扩展</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 团队介绍 -->
+        <section class="py-10 px-4 bg-[#13091B]/50 backdrop-blur-xl">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12 text-glow">核心团队</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">首席执行官</h3>
+                        <p class="text-sm text-white mb-2">John Doe</p>
+                        <p class="text-gray-400">连续创业者，在Web3领域有丰富经验</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">技术总监</h3>
+                        <p class="text-sm text-white mb-2">Mike Chen</p>
+                        <p class="text-gray-400">前Google工程师，区块链技术专家</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">产品总监</h3>
+                        <p class="text-sm text-white mb-2">Sarah Wang</p>
+                        <p class="text-gray-400">资深游戏制作人，精通产品设计</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">市场总监</h3>
+                        <p class="text-sm text-white mb-2">Lisa Zhang</p>
+                        <p class="text-gray-400">营销专家，擅长社区运营</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 合作伙伴 -->
+        <section class="py-10 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12 text-glow">战略合作</h2>
+                <div class="space-y-16">
+                    <div>
+                        <h3 class="text-2xl font-bold text-center mb-8">投资机构</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                            <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                                <span class="text-blue-400 font-bold">A16Z</span>
+                            </div>
+                            <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                                <span class="text-blue-400 font-bold">Binance Labs</span>
+                            </div>
+                            <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                                <span class="text-blue-400 font-bold">Sequoia</span>
+                            </div>
+                            <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center">
+                                <span class="text-blue-400 font-bold">Solana Ventures</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section class="py-10 px-4 bg-[#13091B]/50 backdrop-blur-xl">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12 text-glow">常见问题</h2>
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">如何开始游戏？</h3>
+                        <p class="text-gray-300">连接您的 Solana 钱包，购买 DSNK 代币即可开始游戏</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">游戏收益如何分配？</h3>
+                        <p class="text-gray-300">游戏内获得的收益将直接发放到您的钱包地址，可随时提取</p>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 有什么用途？</h3>
+                        <p class="text-gray-300">NFT 可用于游戏内的角色升级、装备强化，也可以在市场上交易</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 社区活动 -->
+        <section class="py-10 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12 text-glow">社区活动</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+                    <a href="#" class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">Discord</h3>
+                        <p class="text-gray-300 mb-4">加入50,000+玩家社区</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white">在线成员</span>
+                            <span class="text-blue-400">12,458</span>
+                        </div>
+                    </a>
+                    <a href="#" class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">Twitter</h3>
+                        <p class="text-gray-300 mb-4">获取最新项目动态</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white">关注者</span>
+                            <span class="text-blue-400">89.5K</span>
+                        </div>
+                    </a>
+                    <a href="#" class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">Telegram</h3>
+                        <p class="text-gray-300 mb-4">实时互动交流</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white">群组成员</span>
+                            <span class="text-blue-400">25,789</span>
+                        </div>
+                    </a>
+                    <a href="#" class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">Medium</h3>
+                        <p class="text-gray-300 mb-4">深度文章与更新日志</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white">订阅者</span>
+                            <span class="text-blue-400">15.2K</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="py-8 px-4 border-t border-white/10">
+        <div class="max-w-7xl mx-auto text-center text-gray-400">
+            <p> 2024 Bitcoin Dogs. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 更新 DSNK 数量
+        function updateDsnkAmount() {
+            const solAmount = document.getElementById('solAmount').value;
+            const dsnkAmount = solAmount * 10000;
+            document.getElementById('dsnkAmount').textContent = dsnkAmount.toLocaleString();
+        }
+
+        // 参与私募
+        async function contribute() {
+            const solAmount = document.getElementById('solAmount').value;
+            if (!solAmount || solAmount <= 0) {
+                alert('请输入有效的 SOL 数量');
+                return;
+            }
+            // TODO: 实现私募逻辑
+            alert('私募功能即将开放，敬请期待！');
+        }
+
+        // 连接钱包
+        async function connectWallet() {
+            try {
+                const resp = await window.solana.connect();
+                console.log('Connected! Public Key:', resp.publicKey.toString());
+                
+                // 更新按钮状态
+                const connectButton = document.getElementById('navConnectWallet');
+                connectButton.textContent = '已连接';
+                connectButton.disabled = true;
+                
+                // 显示投资表单
+                document.getElementById('contributeForm').classList.remove('hidden');
+            } catch (err) {
+                console.error(err);
+                alert('连接钱包失败，请确保安装了 Solana 钱包扩展！');
+            }
+        }
+
+        window.addEventListener('load', function() {
+            const connectButton = document.getElementById('navConnectWallet');
+            const solInput = document.getElementById('solAmount');
+            
+            // 连接钱包按钮点击事件
+            if (connectButton) {
+                connectButton.addEventListener('click', connectWallet);
+            }
+
+            if (solInput) {
+                solInput.addEventListener('input', updateDsnkAmount);
+            }
+
+            // 更新倒计时函数
+            function updateCountdown() {
+                const targetDate = new Date('2025-02-01T00:00:00+08:00');
+                const now = new Date('2025-01-02T07:43:37+08:00');
+                
+                const diff = targetDate - now;
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            }
+
+            // 每秒更新倒计时
+            setInterval(updateCountdown, 1000);
+            updateCountdown(); // 立即执行一次
+        });
+    </script>
+</body>
+</html>

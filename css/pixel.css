@@ -1,0 +1,155 @@
+/* Solana 主题色 */
+:root {
+    --sol-purple: #9945FF;
+    --sol-blue: #14F195;
+    --sol-gradient: linear-gradient(90deg, #9945FF 0%, #14F195 100%);
+    --sol-dark: #121212;
+    --sol-light: #14F195;
+}
+
+/* 像素字体 */
+@font-face {
+    font-family: 'PixelFont';
+    src: url('../fonts/pixel.woff2') format('woff2');
+}
+
+/* 基础样式 */
+body {
+    background: var(--sol-dark);
+    color: white;
+}
+
+.pixel-text {
+    font-family: 'PixelFont', monospace;
+    image-rendering: pixelated;
+}
+
+/* 像素按钮 */
+.pixel-btn {
+    background: var(--sol-purple);
+    border: none;
+    padding: 12px 24px;
+    color: white;
+    font-family: 'PixelFont', monospace;
+    font-size: 18px;
+    position: relative;
+    cursor: pointer;
+    image-rendering: pixelated;
+    transition: all 0.3s ease;
+}
+
+.pixel-btn:hover {
+    background: var(--sol-blue);
+    transform: translateY(-2px);
+}
+
+.pixel-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(255,255,255,0.1) 0%,
+        rgba(255,255,255,0) 100%
+    );
+}
+
+/* 像素边框 */
+.pixel-border {
+    border: 4px solid var(--sol-purple);
+    image-rendering: pixelated;
+    position: relative;
+}
+
+.pixel-border::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: transparent;
+    border: 2px solid rgba(153, 69, 255, 0.2);
+    pointer-events: none;
+}
+
+/* 渐变背景 */
+.sol-gradient {
+    background: var(--sol-gradient);
+    position: relative;
+}
+
+.sol-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/noise.png');
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+/* 像素阴影 */
+.pixel-shadow {
+    box-shadow: 
+        4px 0 0 0 rgba(153, 69, 255, 0.2),
+        0 4px 0 0 rgba(153, 69, 255, 0.2),
+        4px 4px 0 0 rgba(153, 69, 255, 0.2);
+}
+
+/* 像素图标 */
+.pixel-icon {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 8px rgba(153, 69, 255, 0.5));
+}
+
+/* 导航链接 */
+.nav-link {
+    position: relative;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--sol-gradient);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--sol-blue);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* 游戏场景背景 */
+.game-scene {
+    background: linear-gradient(180deg, var(--sol-dark) 0%, #1A1A1A 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-scene::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(153, 69, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
