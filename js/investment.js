@@ -1,3 +1,4 @@
+import { config } from './config.js';
 import { getProvider } from './wallet.js';
 import { getReferrer, getReferralReward } from './referral.js';
 
@@ -11,7 +12,7 @@ async function sendTransaction(provider, toAddress, amount) {
         }
 
         // 创建连接
-        const connection = new solanaWeb3.Connection('https://black-lingering-fog.solana-mainnet.quiknode.pro/4d7783df09fe07db6ce511d870249fc3eb642683');
+        const connection = new solanaWeb3.Connection(config.RPC_URL);
         
         // 创建交易
         const transaction = new solanaWeb3.Transaction();
@@ -48,48 +49,6 @@ async function sendTransaction(provider, toAddress, amount) {
     } catch (error) {
         console.error('发送交易失败:', error);
         throw error;
-    }
-}
-
-// Handle SOL input validation
-export function handleSolInput(event) {
-    const input = event.target;
-    let value = input.value;
-    
-    // Remove any non-numeric characters except decimal point
-    value = value.replace(/[^\d.]/g, '');
-    
-    // Ensure only one decimal point
-    const parts = value.split('.');
-    if (parts.length > 2) {
-        value = parts[0] + '.' + parts.slice(1).join('');
-    }
-    
-    // Limit to 9 decimal places
-    if (parts.length === 2 && parts[1].length > 9) {
-        parts[1] = parts[1].substring(0, 9);
-        value = parts[0] + '.' + parts[1];
-    }
-    
-    input.value = value;
-    
-    // 更新DSNK数量显示
-    const dsnkAmount = parseFloat(value || '0') * 10000;
-    const dsnkDisplay = document.getElementById('dsnkAmount');
-    if (dsnkDisplay) {
-        dsnkDisplay.textContent = dsnkAmount.toLocaleString();
-    }
-
-    // 更新投资信息显示
-    const investedInfo = document.getElementById('investedInfo');
-    if (investedInfo) {
-        const referrer = getReferrer();
-        if (referrer && value) {
-            const referralAmount = getReferralReward(parseFloat(value));
-            investedInfo.textContent = `包含 ${referralAmount.toFixed(2)} SOL 推荐奖励`;
-        } else {
-            investedInfo.textContent = '';
-        }
     }
 }
 
@@ -139,74 +98,50 @@ export async function contribute() {
             throw new Error('请输入有效的 SOL 数量（最小 0.1 SOL）');
         }
 
+        // 检查余额
+        const connection = new solanaWeb3.Connection(config.RPC_URL);
+        const balance = await connection.getBalance(new solanaWeb3.PublicKey(provider.publicKey.toString()));
+        const solBalance = balance / solanaWeb3.LAMPORTS_PER_SOL;
+        
+        if (solBalance < solAmount) {
+            alert(`余额不足。\n当前余额: ${solBalance.toFixed(2)} SOL\n需要: ${solAmount.toFixed(2)} SOL`);
+            return;
+        }
+
         // 项目方钱包地址
-        const projectWallet = 'DogXxqbKjwnMFJGHBDGxYz1CvPVRkJogHVFJRMzFmKzj';
+        const projectWallet = config.WALLET_ADDRESS;
         console.log('Sending transaction to:', projectWallet); // 调试日志
 
-        try {
-            // 创建连接
-            const connection = new solanaWeb3.Connection(
-                'https://black-lingering-fog.solana-mainnet.quiknode.pro/4d7783df09fe07db6ce511d870249fc3eb642683',
-                'confirmed'
-            );
-            console.log('Solana connection created'); // 调试日志
-
-            // 创建交易
-            const transaction = new solanaWeb3.Transaction();
+        // 检查是否有推荐人
+        const referrer = getReferrer();
+        if (referrer && referrer !== provider.publicKey.toString()) {
+            // 计算推荐奖励
+            const referralReward = solAmount * 0.1; // 10% 推荐奖励
             
-            // 获取推荐人地址
-            const referrer = getReferrer();
-            console.log('Referrer:', referrer); // 调试日志
-
-            // 计算项目方和推荐人的金额
-            let projectAmount = solAmount;
-            if (referrer && referrer !== provider.publicKey.toString()) {
-                const referralAmount = getReferralReward(solAmount);
-                projectAmount = solAmount - referralAmount;
-
-                // 添加推荐奖励转账指令
-                transaction.add(
-                    solanaWeb3.SystemProgram.transfer({
-                        fromPubkey: provider.publicKey,
-                        toPubkey: new solanaWeb3.PublicKey(referrer),
-                        lamports: Math.floor(referralAmount * solanaWeb3.LAMPORTS_PER_SOL)
-                    })
-                );
-            }
-
-            // 添加主要转账指令
-            transaction.add(
-                solanaWeb3.SystemProgram.transfer({
-                    fromPubkey: provider.publicKey,
-                    toPubkey: new solanaWeb3.PublicKey(projectWallet),
-                    lamports: Math.floor(projectAmount * solanaWeb3.LAMPORTS_PER_SOL)
-                })
-            );
+            // 创建两笔交易：一笔给项目方，一笔给推荐人
+            const projectAmount = solAmount - referralReward;
             
-            console.log('Transaction created'); // 调试日志
+            // 第一笔交易：给项目方
+            await sendTransaction(provider, projectWallet, projectAmount);
+            console.log('Project payment sent:', projectAmount);
+            
+            // 第二笔交易：给推荐人
+            await sendTransaction(provider, referrer, referralReward);
+            console.log('Referral reward sent:', referralReward);
+            
+            alert(`投资成功！\n项目方收到: ${projectAmount.toFixed(2)} SOL\n推荐人收到: ${referralReward.toFixed(2)} SOL`);
+        } else {
+            // 没有推荐人，全部金额给项目方
+            const signature = await sendTransaction(provider, projectWallet, solAmount);
+            console.log('Transaction signature:', signature);
+            alert('投资成功！');
+        }
 
-            // 获取最新区块哈希
-            const { blockhash } = await connection.getLatestBlockhash();
-            transaction.recentBlockhash = blockhash;
-            transaction.feePayer = provider.publicKey;
-            
-            console.log('Requesting signature...'); // 调试日志
-            const { signature } = await provider.signAndSendTransaction(transaction);
-            console.log('Transaction sent, signature:', signature); // 调试日志
-            
-            await connection.confirmTransaction(signature);
-            console.log('Transaction confirmed'); // 调试日志
-
-            alert('投资成功！\n交易签名: ' + signature);
-            
-            // 清空输入框
-            if (input) {
-                input.value = '';
-                handleSolInput({ target: input });
-            }
-        } catch (err) {
-            console.error('Transaction error:', err);
-            throw new Error('交易失败: ' + (err.message || '未知错误'));
+        // 清空输入框
+        if (input) {
+            input.value = '';
+            const event = new Event('input');
+            input.dispatchEvent(event);
         }
     } catch (err) {
         console.error('Operation failed:', err);

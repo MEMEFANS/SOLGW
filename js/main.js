@@ -1,18 +1,11 @@
 import { initReferral } from './referral.js';
-import { handleSolInput, contribute } from './investment.js';
+import { contribute } from './investment.js';
 
 // DOM 加载完成后执行
 document.addEventListener('DOMContentLoaded', () => {
     // 初始化投资相关功能
     const solInput = document.getElementById('solAmount');
     const investButton = document.getElementById('investButton');
-    
-    if (solInput) {
-        // 添加输入事件监听
-        solInput.addEventListener('input', handleSolInput);
-        // 手动调用一次处理函数进行初始化
-        handleSolInput({ target: solInput });
-    }
 
     if (investButton) {
         investButton.addEventListener('click', contribute);

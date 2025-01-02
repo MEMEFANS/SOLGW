@@ -21,6 +21,33 @@ body {
     overflow-x: hidden;
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
+    color: #14F195;  /* 默认文字颜色 */
+}
+
+/* 文字颜色类 */
+h1, h2, h3, h4, h5, h6 {
+    color: #14F195;
+}
+
+p, span, div {
+    color: inherit;
+}
+
+.text-primary {
+    color: #14F195;
+}
+
+.text-secondary {
+    color: #9945FF;
+}
+
+input, textarea, select {
+    color: #14F195 !important;
+}
+
+input::placeholder {
+    color: #9945FF !important;
+    opacity: 0.7;
 }
 
 /* 赛博朋克背景 */
@@ -902,15 +929,15 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #0D0717 inset !important;
-    -webkit-text-fill-color: #64E9FF !important;
+    -webkit-box-shadow: 0 0 0 30px #13091B inset !important;
+    -webkit-text-fill-color: #14F195 !important;
 }
 
 #solAmount {
     background: rgba(19, 9, 27, 0.5);
     border: 1px solid rgba(100, 233, 255, 0.1);
     border-radius: 8px;
-    color: #fff;
+    color: #14F195;
     font-size: 1.125rem;
     padding: 0.75rem 1rem;
     width: 100%;

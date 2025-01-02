@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
 </head>
-<body class="text-white antialiased">
+<body class="antialiased text-[#14F195]">
  <!-- 赛博朋克背景 -->
 <div class="cyberpunk-background">
     <div class="neon-grid"></div>
@@ -49,6 +49,7 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <img class="h-10 w-auto" src="./logo.png" alt="Bitcoin Dogs">
+                    <span class="text-2xl font-bold text-[#14F195] ml-2">Dsnk</span>
                 </div>
                 <div class="flex items-center">
                     <div class="wallet-container relative">
@@ -75,19 +76,19 @@
                 <div class="grid grid-cols-4 gap-4 text-center">
                     <div class="countdown-item">
                         <div id="days" class="text-4xl font-bold text-[#64E9FF]">30</div>
-                        <div class="text-sm text-gray-400">天</div>
+                        <div class="text-sm text-[#9945FF]">天</div>
                     </div>
                     <div class="countdown-item">
                         <div id="hours" class="text-4xl font-bold text-[#64E9FF]">00</div>
-                        <div class="text-sm text-gray-400">时</div>
+                        <div class="text-sm text-[#9945FF]">时</div>
                     </div>
                     <div class="countdown-item">
                         <div id="minutes" class="text-4xl font-bold text-[#64E9FF]">00</div>
-                        <div class="text-sm text-gray-400">分</div>
+                        <div class="text-sm text-[#9945FF]">分</div>
                     </div>
                     <div class="countdown-item">
                         <div id="seconds" class="text-4xl font-bold text-[#64E9FF]">00</div>
-                        <div class="text-sm text-gray-400">秒</div>
+                        <div class="text-sm text-[#9945FF]">秒</div>
                     </div>
                 </div>
             </div>
@@ -102,27 +103,27 @@
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">私募价格</h3>
-                        <p class="text-gray-300">1 SOL = 10000 DSNK</p>
+                        <p class="text-[#14F195]">1 SOL = 10000 DSNK</p>
                     </div>
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">最低投资</h3>
-                        <p class="text-gray-300">0.1 SOL</p>
+                        <p class="text-[#14F195]">0.1 SOL</p>
                     </div>
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">总发行量</h3>
-                        <p class="text-gray-300">100,000,000 DSNK</p>
+                        <p class="text-[#14F195]">100,000,000 DSNK</p>
                     </div>
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">私募比例</h3>
-                        <p class="text-gray-300">10%</p>
+                        <p class="text-[#14F195]">10%</p>
                     </div>
                 </div>
 
                 <!-- 进度条 -->
                 <div class="mb-6">
                     <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-400">已募集</span>
-                        <span class="text-sm text-gray-400">500,000 / 1,000,000 SOL</span>
+                        <span class="text-sm text-[#9945FF]">已募集</span>
+                        <span class="text-sm text-[#14F195]">500,000 / 1,000,000 SOL</span>
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 50%"></div>
@@ -132,20 +133,20 @@
                 <!-- 投资表单 -->
                 <div id="contributeForm">
                     <div class="mb-6">
-                        <label class="block text-gray-300 mb-2">投资金额 (SOL)</label>
+                        <label class="block text-[#9945FF] mb-2">投资金额 (SOL)</label>
                         <input type="number" id="solAmount" 
-                            class="w-full px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#64E9FF] focus:outline-none focus:border-[#64E9FF] placeholder-gray-600" 
+                            class="w-full px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#14F195] focus:outline-none focus:border-[#64E9FF] placeholder-[#9945FF]" 
                             min="0.1" 
                             step="0.1" 
                             placeholder="输入 SOL 数量（最小 0.1 SOL）">
                     </div>
                     <div class="mb-6">
-                        <label class="block text-gray-300 mb-2">将获得 DSNK</label>
+                        <label class="block text-[#9945FF] mb-2">将获得 DSNK</label>
                         <div class="flex justify-between items-center">
-                            <div class="text-2xl font-bold text-[#64E9FF]">
+                            <div class="text-2xl font-bold text-[#14F195]">
                                 <span id="dsnkAmount">0</span> DSNK
                             </div>
-                            <div class="text-sm text-gray-400">
+                            <div class="text-sm text-[#9945FF]">
                                 <span id="investedInfo"></span>
                             </div>
                         </div>
@@ -154,26 +155,26 @@
                     <!-- 推荐链接区域 -->
                     <div class="mb-6 p-4 bg-[#1A0B26] rounded-lg border border-[#8364E8]/30">
                         <h3 class="text-lg font-semibold text-[#64E9FF] mb-2">推荐奖励</h3>
-                        <p class="text-sm text-gray-400 mb-3">分享您的推荐链接，获得被推荐人投资额的 10% SOL 奖励！</p>
+                        <p class="text-sm text-[#9945FF] mb-3">分享您的推荐链接，获得被推荐人投资额的 10% SOL 奖励！</p>
                         <div class="relative flex items-center">
                             <input type="text" id="referralLink" readonly
-                                class="flex-1 px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#64E9FF] mr-2 placeholder-gray-600"
+                                class="flex-1 px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#14F195] mr-2 placeholder-[#9945FF]"
                                 placeholder="请先连接钱包生成推荐链接">
                             <button id="copyReferral" 
-                                class="px-4 py-2 bg-[#8364E8] hover:bg-[#64E9FF] text-white rounded-lg text-sm transition-colors duration-200 whitespace-nowrap">
+                                class="px-4 py-2 bg-[#8364E8] hover:bg-[#64E9FF] text-[#14F195] rounded-lg text-sm transition-colors duration-200 whitespace-nowrap">
                                 复制链接
                             </button>
                         </div>
-                        <div id="referralStatus" class="text-sm text-[#64E9FF] mt-2 min-h-[20px]"></div>
+                        <div id="referralStatus" class="text-sm text-[#14F195] mt-2 min-h-[20px]"></div>
                     </div>
 
-                    <button id="investButton" class="w-full bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white py-3 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity">
+                    <button id="investButton" class="w-full bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-[#14F195] py-3 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity">
                         确认私募
                     </button>
                 </div>
 
                 <!-- 注意事项 -->
-                <div class="mt-6 text-sm text-gray-400">
+                <div class="mt-6 text-sm text-[#9945FF]">
                     <h4 class="font-semibold mb-2">注意事项：</h4>
                     <ul class="list-disc list-inside space-y-1">
                         <li>请确保您的钱包中有足够的 SOL</li>
@@ -194,15 +195,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="glass-card hover-glow p-8">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">PVP 对战</h3>
-                    <p class="text-gray-300">多人实时对战，策略与技巧的完美结合</p>
+                    <p class="text-[#9945FF]">多人实时对战，策略与技巧的完美结合</p>
                 </div>
                 <div class="glass-card hover-glow p-8">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 资产</h3>
-                    <p class="text-gray-300">独特的游戏道具和角色，以 NFT 形式存在</p>
+                    <p class="text-[#9945FF]">独特的游戏道具和角色，以 NFT 形式存在</p>
                 </div>
                 <div class="glass-card hover-glow p-8">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">Play to Earn</h3>
-                    <p class="text-gray-300">边玩边赚，打造可持续的游戏经济系统</p>
+                    <p class="text-[#9945FF]">边玩边赚，打造可持续的游戏经济系统</p>
                 </div>
             </div>
         </div>
@@ -215,15 +216,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">私募分配</h3>
-                    <p class="text-gray-300">30% 用于私募</p>
+                    <p class="text-[#9945FF]">30% 用于私募</p>
                 </div>
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">流动性</h3>
-                    <p class="text-gray-300">40% 用于提供流动性</p>
+                    <p class="text-[#9945FF]">40% 用于提供流动性</p>
                 </div>
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">团队保留</h3>
-                    <p class="text-gray-300">30% 团队持有（锁仓）</p>
+                    <p class="text-[#9945FF]">30% 团队持有（锁仓）</p>
                 </div>
             </div>
         </div>
@@ -236,7 +237,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">第一阶段</h3>
-                    <ul class="text-gray-300 space-y-2">
+                    <ul class="text-[#9945FF] space-y-2">
                         <li>• 完成私募</li>
                         <li>• 上线DEX</li>
                         <li>• 开启流动性挖矿</li>
@@ -244,7 +245,7 @@
                 </div>
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">第二阶段</h3>
-                    <ul class="text-gray-300 space-y-2">
+                    <ul class="text-[#9945FF] space-y-2">
                         <li>• 游戏开发</li>
                         <li>• NFT设计</li>
                         <li>• 社区建设</li>
@@ -252,7 +253,7 @@
                 </div>
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">第三阶段</h3>
-                    <ul class="text-gray-300 space-y-2">
+                    <ul class="text-[#9945FF] space-y-2">
                         <li>• 游戏测试</li>
                         <li>• NFT空投</li>
                         <li>• 市场推广</li>
@@ -260,7 +261,7 @@
                 </div>
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">第四阶段</h3>
-                    <ul class="text-gray-300 space-y-2">
+                    <ul class="text-[#9945FF] space-y-2">
                         <li>• 游戏上线</li>
                         <li>• 跨链整合</li>
                         <li>• 生态扩展</li>
@@ -278,26 +279,26 @@
                 <div class="glass-card hover-glow p-6 text-center">
                     <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
                     <h3 class="text-xl font-bold text-blue-400 mb-2">首席执行官</h3>
-                    <p class="text-sm text-white mb-2">John Doe</p>
-                    <p class="text-gray-400">连续创业者，Web3领域专家</p>
+                    <p class="text-sm text-[#14F195] mb-2">John Doe</p>
+                    <p class="text-[#9945FF]">连续创业者，Web3领域专家</p>
                 </div>
                 <div class="glass-card hover-glow p-6 text-center">
                     <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
                     <h3 class="text-xl font-bold text-blue-400 mb-2">技术总监</h3>
-                    <p class="text-sm text-white mb-2">Mike Chen</p>
-                    <p class="text-gray-400">前Google工程师，区块链专家</p>
+                    <p class="text-sm text-[#14F195] mb-2">Mike Chen</p>
+                    <p class="text-[#9945FF]">前Google工程师，区块链专家</p>
                 </div>
                 <div class="glass-card hover-glow p-6 text-center">
                     <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
                     <h3 class="text-xl font-bold text-blue-400 mb-2">产品总监</h3>
-                    <p class="text-sm text-white mb-2">Sarah Wang</p>
-                    <p class="text-gray-400">资深游戏制作人</p>
+                    <p class="text-sm text-[#14F195] mb-2">Sarah Wang</p>
+                    <p class="text-[#9945FF]">资深游戏制作人</p>
                 </div>
                 <div class="glass-card hover-glow p-6 text-center">
                     <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
                     <h3 class="text-xl font-bold text-blue-400 mb-2">市场总监</h3>
-                    <p class="text-sm text-white mb-2">Lisa Zhang</p>
-                    <p class="text-gray-400">营销专家，社区运营</p>
+                    <p class="text-sm text-[#14F195] mb-2">Lisa Zhang</p>
+                    <p class="text-[#9945FF]">营销专家，社区运营</p>
                 </div>
             </div>
         </div>
@@ -310,15 +311,15 @@
             <div class="max-w-3xl mx-auto space-y-6">
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">如何开始游戏？</h3>
-                    <p class="text-gray-300">连接您的 Solana 钱包，购买 DSNK 代币即可开始游戏</p>
+                    <p class="text-[#9945FF]">连接您的 Solana 钱包，购买 DSNK 代币即可开始游戏</p>
                 </div>
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">游戏收益如何分配？</h3>
-                    <p class="text-gray-300">游戏内获得的收益将直接发放到您的钱包地址</p>
+                    <p class="text-[#9945FF]">游戏内获得的收益将直接发放到您的钱包地址</p>
                 </div>
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 有什么用途？</h3>
-                    <p class="text-gray-300">NFT 可用于游戏内的角色升级、装备强化，也可以交易</p>
+                    <p class="text-[#9945FF]">NFT 可用于游戏内的角色升级、装备强化，也可以交易</p>
                 </div>
             </div>
         </div>
@@ -331,19 +332,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <a href="#" class="glass-card hover-glow p-6 text-center">
                     <h3 class="text-xl font-bold text-blue-400">Discord</h3>
-                    <p class="text-gray-300 mt-2">加入讨论</p>
+                    <p class="text-[#9945FF] mt-2">加入讨论</p>
                 </a>
                 <a href="#" class="glass-card hover-glow p-6 text-center">
                     <h3 class="text-xl font-bold text-blue-400">Twitter</h3>
-                    <p class="text-gray-300 mt-2">关注动态</p>
+                    <p class="text-[#9945FF] mt-2">关注动态</p>
                 </a>
                 <a href="#" class="glass-card hover-glow p-6 text-center">
                     <h3 class="text-xl font-bold text-blue-400">Telegram</h3>
-                    <p class="text-gray-300 mt-2">即时交流</p>
+                    <p class="text-[#9945FF] mt-2">即时交流</p>
                 </a>
                 <a href="#" class="glass-card hover-glow p-6 text-center">
                     <h3 class="text-xl font-bold text-blue-400">Medium</h3>
-                    <p class="text-gray-300 mt-2">深度文章</p>
+                    <p class="text-[#9945FF] mt-2">深度文章</p>
                 </a>
             </div>
         </div>
@@ -352,7 +353,7 @@
 
     <!-- 页脚 -->
     <footer class="py-8 bg-[#13091B]/50 backdrop-blur-xl">
-        <div class="container mx-auto px-4 text-center text-gray-400">
+        <div class="container mx-auto px-4 text-center text-[#9945FF]">
             <p>&copy; 2024 Bitcoin Dogs. All rights reserved.</p>
         </div>
     </footer>
