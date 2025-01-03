@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景圆圈 -->
+    <circle cx="100" cy="100" r="100" fill="url(#grad4)"/>
+    
+    <!-- 螺旋图案 -->
+    <path d="M100 100 L120 80 A40 40 0 1 1 80 120" stroke="#14F195" stroke-width="6" fill="none" opacity="0.3"/>
+    <path d="M100 100 L80 120 A30 30 0 1 0 120 80" stroke="#9945FF" stroke-width="6" fill="none" opacity="0.4"/>
+    
+    <!-- 中心光点 -->
+    <circle cx="100" cy="100" r="45" fill="url(#glow4)" filter="url(#blur4)"/>
+    
+    <!-- 渐变定义 -->
+    <defs>
+        <linearGradient id="grad4" x1="0" y1="200" x2="200" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" style="stop-color:#14F195"/>
+            <stop offset="50%" style="stop-color:#9945FF"/>
+            <stop offset="100%" style="stop-color:#14F195"/>
+        </linearGradient>
+        <radialGradient id="glow4" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" style="stop-color:rgba(153,69,255,0.4)"/>
+            <stop offset="100%" style="stop-color:rgba(20,241,149,0)"/>
+        </radialGradient>
+        <filter id="blur4">
+            <feGaussianBlur stdDeviation="3"/>
+        </filter>
+    </defs>
+</svg>

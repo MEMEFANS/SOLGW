@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景圆圈 -->
+    <circle cx="100" cy="100" r="100" fill="url(#grad2)"/>
+    
+    <!-- 波浪图案 -->
+    <path d="M40 100 Q70 60 100 100 Q130 140 160 100" stroke="#14F195" stroke-width="8" fill="none" opacity="0.3"/>
+    <path d="M40 120 Q70 80 100 120 Q130 160 160 120" stroke="#9945FF" stroke-width="8" fill="none" opacity="0.4"/>
+    
+    <!-- 中心光晕 -->
+    <circle cx="100" cy="100" r="50" fill="url(#glow2)" filter="url(#blur2)"/>
+    
+    <!-- 渐变定义 -->
+    <defs>
+        <linearGradient id="grad2" x1="200" y1="0" x2="0" y2="200" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" style="stop-color:#14F195"/>
+            <stop offset="100%" style="stop-color:#9945FF"/>
+        </linearGradient>
+        <radialGradient id="glow2" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" style="stop-color:rgba(20,241,149,0.3)"/>
+            <stop offset="100%" style="stop-color:rgba(153,69,255,0)"/>
+        </radialGradient>
+        <filter id="blur2">
+            <feGaussianBlur stdDeviation="3"/>
+        </filter>
+    </defs>
+</svg>

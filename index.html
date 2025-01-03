@@ -6,62 +6,68 @@
     <title>Bitcoin Dogs</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
+    <link href="css/snake-background.css" rel="stylesheet">
+    <link href="css/presale-common.css" rel="stylesheet">
 </head>
 <body class="antialiased text-[#14F195]">
- <!-- 赛博朋克背景 -->
-<div class="cyberpunk-background">
-    <div class="neon-grid"></div>
-    <div class="glitch-overlay"></div>
-    <div class="cyber-lines">
-        <div class="cyber-line"></div>
-        <div class="cyber-line"></div>
-        <div class="cyber-line"></div>
+    <div class="snake-background">
+        <div class="glow-overlay"></div>
+        <div class="game-grid"></div>
+        <div class="stars"></div>
+        <div class="light-effects"></div>
     </div>
-    <div class="hex-pattern"></div>
-    <div class="data-stream">
-        <div class="data-particle"></div>
-        <div class="data-particle"></div>
-        <div class="data-particle"></div>
-        <div class="data-particle"></div>
-        <div class="data-particle"></div>
-    </div>
-    <div class="neon-glow"></div>
-</div>
-<!-- K线图动画 -->
-<div class="candlestick-container">
-    <div class="candlestick-chart">
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-        <div class="candlestick"></div>
-    </div>
-</div>
-
     <!-- 导航栏 -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-[#13091B]/80 backdrop-blur-xl border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <img class="h-10 w-auto" src="./logo.png" alt="Bitcoin Dogs">
-                    <span class="text-2xl font-bold text-[#14F195] ml-2">Dsnk</span>
+                    <img class="h-8 md:h-10 w-auto" src="./logo.png" alt="Bitcoin Dogs">
                 </div>
-                <div class="flex items-center">
-                    <div class="wallet-container relative">
-                        <button id="navConnectWallet" class="button-glow text-white px-6 py-2 rounded-lg">
-                            连接钱包
+                
+                <!-- 桌面端菜单 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">特色</a>
+                    <a href="#tokenomics" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
+                    <a href="#roadmap" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">路线图</a>
+                    <a href="#team" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">团队</a>
+                    <div id="walletContainer" class="relative">
+                        <button id="connectWallet" class="connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-8 py-3 rounded-full hover:opacity-90 transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
+                            <span class="text-lg font-medium">连接钱包</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
                         </button>
-                        <div id="walletDropdown" class="wallet-dropdown hidden">
-                            <button id="disconnectWallet" class="wallet-dropdown-item">
-                                断开连接
-                            </button>
+                        <div id="walletInfo" class="hidden absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-[#13091B] ring-1 ring-[#8364E8] ring-opacity-50 backdrop-blur-xl border border-white/10">
+                            <div class="py-1">
+                                <p id="walletAddress" class="px-4 py-3 text-sm text-[#14F195] truncate border-b border-[#8364E8]/20"></p>
+                                <button id="disconnectWallet" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-[#1D0F29] transition-colors">
+                                    断开连接
+                                </button>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- 移动端菜单按钮 -->
+                <div class="md:hidden flex items-center">
+                    <button id="menuButton" class="text-[#14F195] hover:text-[#64E9FF]">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 移动端菜单面板 -->
+            <div id="mobileMenu" class="hidden md:hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="#features" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">特色</a>
+                    <a href="#tokenomics" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
+                    <a href="#roadmap" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">路线图</a>
+                    <a href="#team" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">团队</a>
+                    <button id="mobileConnectWallet" class="w-full mt-2 bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        连接钱包
+                    </button>
                 </div>
             </div>
         </div>
@@ -131,68 +137,53 @@
                 </div>
 
                 <!-- 投资表单 -->
-                <div id="contributeForm">
-                    <div class="mb-6">
-                        <label class="block text-[#9945FF] mb-2">投资金额 (SOL)</label>
-                        <input type="number" id="solAmount" 
-                            class="w-full px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#14F195] focus:outline-none focus:border-[#64E9FF] placeholder-[#9945FF]" 
-                            min="0.1" 
-                            step="0.1" 
-                            placeholder="输入 SOL 数量（最小 0.1 SOL）">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-[#9945FF] mb-2">将获得 DSNK</label>
-                        <div class="flex justify-between items-center">
-                            <div class="text-2xl font-bold text-[#14F195]">
-                                <span id="dsnkAmount">0</span> DSNK
+                <div id="contributeForm" class="hidden">
+                    <div class="gradient-border rounded-lg bg-[#13091B] p-4 mb-6">
+                        <div class="flex flex-col space-y-4">
+                            <div class="flex justify-between items-center">
+                                <label class="text-[#9945FF]">投资金额 (SOL)</label>
+                                <span class="text-[#14F195]">将获得: <span id="dsnkAmount" class="font-bold">0 DSNK</span></span>
                             </div>
-                            <div class="text-sm text-[#9945FF]">
-                                <span id="investedInfo"></span>
-                            </div>
+                            <input type="number" 
+                                   id="investAmount" 
+                                   min="0.1" 
+                                   step="0.1" 
+                                   placeholder="最低 0.1 SOL" 
+                                   class="presale-input">
                         </div>
                     </div>
 
-                    <!-- 推荐链接区域 -->
-                    <div class="mb-6 p-4 bg-[#1A0B26] rounded-lg border border-[#8364E8]/30">
-                        <h3 class="text-lg font-semibold text-[#64E9FF] mb-2">推荐奖励</h3>
-                        <p class="text-sm text-[#9945FF] mb-3">分享您的推荐链接，获得被推荐人投资额的 10% SOL 奖励！</p>
-                        <div class="relative flex items-center">
-                            <input type="text" id="referralLink" readonly
-                                class="flex-1 px-4 py-2 bg-[#0D0717] border border-[#8364E8]/30 rounded-lg text-sm text-[#14F195] mr-2 placeholder-[#9945FF]"
-                                placeholder="请先连接钱包生成推荐链接">
-                            <button id="copyReferral" 
-                                class="px-4 py-2 bg-[#8364E8] hover:bg-[#64E9FF] text-[#14F195] rounded-lg text-sm transition-colors duration-200 whitespace-nowrap">
-                                复制链接
-                            </button>
-                        </div>
-                        <div id="referralStatus" class="text-sm text-[#14F195] mt-2 min-h-[20px]"></div>
-                    </div>
-
-                    <button id="investButton" class="w-full bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-[#14F195] py-3 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity">
+                    <button id="contributeButton"
+                            class="presale-button w-full mb-6">
                         确认私募
                     </button>
                 </div>
 
-                <!-- 注意事项 -->
-                <div class="mt-6 text-sm text-[#9945FF]">
-                    <h4 class="font-semibold mb-2">注意事项：</h4>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li>请确保您的钱包中有足够的 SOL</li>
-                        <li>DSNK 代币将在 IDO 结束后自动发放到您的钱包</li>
-                        <li>私募期间投资的 SOL 将被锁定，无法提取</li>
-                    </ul>
+                <!-- 推荐链接区域 -->
+                <div class="gradient-border rounded-lg bg-[#13091B] p-4 mt-6">
+                    <h3 class="text-[#9945FF] mb-2">推荐奖励</h3>
+                    <p class="text-[#14F195] mb-2">分享您的推荐链接，获得被推荐人投资额的 10% SOL 奖励！</p>
+                    <div class="flex items-center gap-2 mb-2">
+                        <input type="text" 
+                               id="referralLink" 
+                               class="presale-input" 
+                               value="请先连接钱包" 
+                               readonly>
+                        <button id="copyReferral" 
+                                class="presale-button">
+                            复制链接
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- 游戏特色 -->
-    <section class="py-12 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
+    <section id="features" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 gradient-text">
-                游戏特色
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">游戏特色</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 <div class="glass-card hover-glow p-8">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">PVP 对战</h3>
                     <p class="text-[#9945FF]">多人实时对战，策略与技巧的完美结合</p>
@@ -209,11 +200,11 @@
         </div>
     </section>
 
-    <!-- 代币分配 -->
-    <section class="py-10 px-4 bg-[#13091B]/50 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">代币分配</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- 代币经济 -->
+    <section id="tokenomics" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">代币经济</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">私募分配</h3>
                     <p class="text-[#9945FF]">30% 用于私募</p>
@@ -231,10 +222,10 @@
     </section>
 
     <!-- 路线图 -->
-    <section class="py-10 px-4">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">发展路线</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <section id="roadmap" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">发展路线</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-blue-400">第一阶段</h3>
                     <ul class="text-[#9945FF] space-y-2">
@@ -271,11 +262,11 @@
         </div>
     </section>
 
-    <!-- 核心团队 -->
-    <section class="py-10 px-4 bg-[#13091B]/50 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">核心团队</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <!-- 团队介绍 -->
+    <section id="team" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">核心团队</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 <div class="glass-card hover-glow p-6 text-center">
                     <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
                     <h3 class="text-xl font-bold text-blue-400 mb-2">首席执行官</h3>
@@ -360,22 +351,39 @@
 
     <!-- 加载依赖库 -->
     <script src="https://bundle.run/buffer@6.0.3"></script>
-    <script>window.Buffer = buffer.Buffer;</script>
-    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
     <script>
-        // 确保 Solana Web3 正确加载
-        window.addEventListener('load', function() {
-            if (typeof solanaWeb3 === 'undefined') {
-                console.error('Solana Web3 failed to load');
-            } else {
-                console.log('Solana Web3 loaded successfully');
-            }
+        window.Buffer = buffer.Buffer;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
+    <script>
+        window.solanaWeb3 = solanaWeb3;
+    </script>
+    <script src="js/config.js"></script>
+    <script src="js/presale-common.js"></script>
+    <script src="js/snake-background.js"></script>
+    <script>
+        // 初始化
+        presaleCommon.updateCountdown();
+        setInterval(presaleCommon.updateCountdown, 1000);
+
+        // 事件监听
+        document.getElementById('connectWallet').addEventListener('click', presaleCommon.connectWallet);
+        document.getElementById('disconnectWallet').addEventListener('click', presaleCommon.disconnectWallet);
+        document.getElementById('copyReferral').addEventListener('click', presaleCommon.copyReferralLink);
+        document.getElementById('contributeButton').addEventListener('click', presaleCommon.contribute);
+        
+        // 投资金额输入监听
+        document.getElementById('investAmount').addEventListener('input', (e) => {
+            const amount = parseFloat(e.target.value) || 0;
+            const dsnkAmount = presaleCommon.calculateTokens(amount);
+            document.getElementById('dsnkAmount').textContent = `${dsnkAmount} DSNK`;
+        });
+
+        // 移动端菜单
+        document.getElementById('menuButton').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
         });
     </script>
-
-    <!-- 加载应用脚本 -->
-    <script type="module" src="js/wallet.js"></script>
-    <script type="module" src="js/investment.js"></script>
-    <script type="module" src="js/main.js"></script>
 </body>
 </html>

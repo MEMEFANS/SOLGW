@@ -1,0 +1,124 @@
+/* 渐变和背景样式 */
+.gradient-border {
+    border: 1px solid transparent;
+    background: linear-gradient(#13091B, #13091B) padding-box,
+                linear-gradient(to right, #9945FF, #14F195) border-box;
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, rgba(153, 69, 255, 0.1), rgba(20, 241, 149, 0.1));
+}
+
+.text-gradient {
+    background: linear-gradient(to right, #9945FF, #14F195);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 进度条样式 */
+.progress-bar {
+    height: 1rem;
+    background: #0c0521;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #9945FF, #14F195);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+/* 按钮样式 */
+.presale-button {
+    background: linear-gradient(to right, #9945FF, #14F195);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.presale-button:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.presale-button:active {
+    transform: scale(0.98);
+}
+
+.presale-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.connect-wallet-btn {
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.connect-wallet-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.connect-wallet-btn:hover::before {
+    opacity: 1;
+}
+
+.connect-wallet-btn:active {
+    transform: scale(0.98);
+}
+
+/* 输入框样式 */
+.presale-input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: #0c0521;
+    border: 1px solid #9945FF;
+    color: #14F195;
+    border-radius: 0.5rem;
+}
+
+.presale-input:focus {
+    outline: none;
+    border-color: #14F195;
+}
+
+.presale-input::placeholder {
+    color: #9945FF;
+}
+
+/* 钱包信息下拉框样式 */
+#walletInfo {
+    backdrop-filter: blur(16px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(131, 100, 232, 0.2);
+    animation: fadeIn 0.2s ease-out;
+}
+
+#walletAddress {
+    background: rgba(131, 100, 232, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

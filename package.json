@@ -1,5 +1,8 @@
 {
   "name": "bitcoin-dogs-clone",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@solana/web3.js": "^1.98.0"
+  }
 }

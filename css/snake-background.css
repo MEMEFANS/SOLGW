@@ -1,0 +1,569 @@
+:root {
+    --game-bg: #090420;
+    --grid-color: rgba(123, 31, 162, 0.15);
+    --snake-color: #00ff88;
+    --food-color: #ff3d00;
+    --border-color: #7b1fa2;
+    --score-color: #e040fb;
+    --accent-color: #ff3d00;
+    --neon-glow: #00ff88;
+}
+
+body {
+    margin: 0;
+    background: var(--game-bg);
+    min-height: 100vh;
+    overflow: auto;
+}
+
+.snake-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(125deg, #000235 0%, #1e0051 40%, #000235 100%);
+    overflow: hidden;
+    z-index: -2;
+}
+
+.snake-background::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background-image: 
+        radial-gradient(1px 1px at 25% 25%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
+        radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
+        radial-gradient(1px 1px at 75% 75%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
+        radial-gradient(2px 2px at 15% 65%, rgba(255, 255, 255, 0.3) 1px, transparent 0),
+        radial-gradient(2px 2px at 85% 35%, rgba(255, 255, 255, 0.3) 1px, transparent 0);
+    background-size: 100px 100px, 120px 120px, 80px 80px, 140px 140px, 90px 90px;
+    animation: starMove 60s linear infinite;
+}
+
+.snake-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(68, 0, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0, 255, 200, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(128, 0, 255, 0.1) 0%, transparent 50%);
+    filter: blur(30px);
+    mix-blend-mode: screen;
+    animation: auroraMove 15s ease-in-out infinite alternate;
+}
+
+.glow-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 30% 20%, rgba(255, 0, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(0, 255, 255, 0.05) 0%, transparent 40%);
+    filter: blur(40px);
+    animation: glowPulse 8s ease-in-out infinite alternate;
+    z-index: -1;
+}
+
+/* 网格效果 */
+.snake-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(62, 62, 122, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(62, 62, 122, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridMove 20s linear infinite;
+}
+
+/* 发光点效果 */
+.snake-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at 50% 50%, rgba(62, 62, 122, 0.1) 0%, transparent 50%);
+    background-size: 100px 100px;
+    animation: glowMove 10s ease-in-out infinite;
+}
+
+/* 动态光效背景 */
+.light-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: 
+        radial-gradient(circle at var(--x, 50%) var(--y, 50%), 
+        rgba(0, 255, 136, 0.1) 0%,
+        transparent 20%);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    transition: all 0.1s ease;
+    z-index: -1;
+}
+
+/* 游戏网格背景 */
+.game-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 25px 25px;
+    animation: gridMove 20s linear infinite;
+}
+
+/* 星星背景 */
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(1px 1px at 10% 10%, #e040fb 100%, transparent),
+        radial-gradient(1px 1px at 20% 50%, #00ff88 100%, transparent),
+        radial-gradient(2px 2px at 30% 30%, #ff3d00 100%, transparent),
+        radial-gradient(2px 2px at 40% 70%, #e040fb 100%, transparent),
+        radial-gradient(2px 2px at 50% 40%, #00ff88 100%, transparent),
+        radial-gradient(1px 1px at 60% 60%, #ff3d00 100%, transparent),
+        radial-gradient(2px 2px at 70% 20%, #e040fb 100%, transparent),
+        radial-gradient(1px 1px at 80% 80%, #00ff88 100%, transparent),
+        radial-gradient(2px 2px at 90% 40%, #ff3d00 100%, transparent);
+    opacity: 0.3;
+    animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+/* 游戏区域边框 */
+.game-border {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vh;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 
+        0 0 30px rgba(123, 31, 162, 0.3),
+        inset 0 0 30px rgba(123, 31, 162, 0.2);
+    animation: borderPulse 2s ease-in-out infinite;
+    overflow: hidden;
+}
+
+/* 霓虹扫描线 */
+.scan-effect {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 255, 136, 0.1) 50%,
+        transparent 100%
+    );
+    animation: scanEffect 3s ease-in-out infinite;
+}
+
+/* 能量粒子效果 */
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--neon-glow);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFade 1.5s ease-out forwards;
+}
+
+/* 蛇的样式 */
+.snake-segment {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #00ff88 0%, #00cc6e 100%);
+    transition: all 0.1s ease;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.9;
+    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.snake-segment:nth-child(2n) {
+    background: linear-gradient(45deg, #00ff88 0%, #00cc6e 100%);
+}
+
+.snake-segment:nth-child(3n) {
+    background: linear-gradient(90deg, #00ff88 0%, #00cc6e 100%);
+}
+
+.snake-segment:nth-child(4n) {
+    background: linear-gradient(180deg, #00ff88 0%, #00cc6e 100%);
+}
+
+.snake-segment + .snake-segment {
+    margin-top: 1px;
+}
+
+.snake-head {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    z-index: 10;
+    transform-origin: center;
+    pointer-events: none;
+    background-image: url('../images/snake/head.png.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: all 0.1s ease;
+}
+
+/* 食物（骨头）样式 */
+.food {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+}
+
+.bone {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* 骨头中间部分 */
+.bone::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 6px;
+    background: #fff;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 2px;
+}
+
+/* 骨头两端 */
+.bone::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 12px;
+    background: #fff;
+    border-radius: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 12px 0 0 #fff;
+    left: 0;
+}
+
+.wallet-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 8px 0;
+    margin-top: 8px;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.wallet-dropdown.hidden {
+    display: none;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #333;
+}
+
+/* 动态粒子 */
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* 流光线条 */
+.flow-lines {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.flow-line {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 255, 200, 0.2) 50%, 
+        transparent 100%
+    );
+    animation: flowMove 3s linear infinite;
+    transform-origin: left center;
+}
+
+/* 能量波纹 */
+.energy-ripples {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border: 1px solid rgba(0, 255, 200, 0.1);
+    border-radius: 50%;
+    animation: rippleExpand 4s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes scanEffect {
+    0% { transform: translateX(-100%) skewX(-45deg); }
+    100% { transform: translateX(100%) skewX(-45deg); }
+}
+
+@keyframes particleFade {
+    0% {
+        opacity: 1;
+        transform: scale(1) translate(0, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translate(
+            calc(var(--tx) * 100px),
+            calc(var(--ty) * 100px)
+        );
+    }
+}
+
+@keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(40px); }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes foodPulse {
+    0%, 100% {
+        transform: scale(0.9);
+        filter: brightness(0.9);
+    }
+    50% {
+        transform: scale(1);
+        filter: brightness(1.1);
+    }
+}
+
+@keyframes uiPulse {
+    0%, 100% { box-shadow: 0 0 10px var(--border-color); }
+    50% { box-shadow: 0 0 20px var(--border-color); }
+}
+
+@keyframes borderPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 30px rgba(123, 31, 162, 0.3),
+            inset 0 0 30px rgba(123, 31, 162, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 0 50px rgba(123, 31, 162, 0.4),
+            inset 0 0 50px rgba(123, 31, 162, 0.3);
+    }
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes glowMove {
+    0% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+}
+
+@keyframes starMove {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes auroraMove {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateY(-2%) scale(1.02);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+    }
+}
+
+@keyframes glowPulse {
+    0% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+}
+
+@keyframes flowMove {
+    0% {
+        transform: translateX(-100%) scaleY(1);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(0%) scaleY(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%) scaleY(1);
+        opacity: 0;
+    }
+}
+
+@keyframes rippleExpand {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0.5;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        width: 500px;
+        height: 500px;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* 游戏UI */
+.game-ui {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 20px;
+    z-index: 10;
+}
+
+.game-score {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--score-color);
+    font-size: 24px;
+    text-shadow: 0 0 10px var(--score-color);
+    padding: 15px 25px;
+    background: rgba(9, 4, 32, 0.9);
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    animation: uiPulse 2s ease-in-out infinite;
+}
+
+.game-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--score-color);
+    font-size: 12px;
+    text-shadow: 0 0 5px rgba(64, 224, 208, 0.5);
+    background: rgba(10, 14, 46, 0.9);
+    padding: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    animation: uiPulse 2s ease-in-out infinite;
+}
