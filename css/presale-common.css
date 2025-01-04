@@ -122,3 +122,30 @@
         transform: translateY(0);
     }
 }
+
+/* 自定义提示框样式 */
+.custom-alert {
+    position: fixed;
+    padding: 15px 25px;
+    background: rgba(19, 9, 27, 0.95);
+    border: 1px solid rgba(131, 100, 232, 0.3);
+    border-radius: 12px;
+    color: #14F195;
+    font-size: 16px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 20px rgba(131, 100, 232, 0.2);
+    z-index: 1000;
+    animation: alertFadeIn 0.3s ease-out;
+}
+
+@keyframes alertFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

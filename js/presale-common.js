@@ -147,16 +147,28 @@ async function contribute() {
             throw new Error('无法连接到Solana网络，请稍后再试');
         }
 
-        // 创建交易指令
-        const instruction = globalThis.window.solanaWeb3.SystemProgram.transfer({
+        // 获取推荐人地址
+        const referrer = getReferrer();
+        const transaction = new globalThis.window.solanaWeb3.Transaction();
+
+        // 主要投资转账
+        const mainInstruction = globalThis.window.solanaWeb3.SystemProgram.transfer({
             fromPubkey: new globalThis.window.solanaWeb3.PublicKey(walletState.address),
             toPubkey: new globalThis.window.solanaWeb3.PublicKey(config.PRESALE_WALLET),
             lamports: Math.floor(amount * globalThis.window.solanaWeb3.LAMPORTS_PER_SOL)
         });
+        transaction.add(mainInstruction);
 
-        // 创建交易
-        const transaction = new globalThis.window.solanaWeb3.Transaction();
-        transaction.add(instruction);
+        // 如果有推荐人，添加推荐奖励转账
+        if (referrer) {
+            const referralReward = amount * 0.1; // 10% 推荐奖励
+            const referralInstruction = globalThis.window.solanaWeb3.SystemProgram.transfer({
+                fromPubkey: new globalThis.window.solanaWeb3.PublicKey(config.PRESALE_WALLET),
+                toPubkey: new globalThis.window.solanaWeb3.PublicKey(referrer),
+                lamports: Math.floor(referralReward * globalThis.window.solanaWeb3.LAMPORTS_PER_SOL)
+            });
+            transaction.add(referralInstruction);
+        }
 
         // 获取最新的区块哈希
         let blockhash;
@@ -178,10 +190,12 @@ async function contribute() {
                 skipPreflight: false,
                 preflightCommitment: 'confirmed'
             });
+
+            // 显示处理中的提示
+            showCustomAlert('交易处理中...', document.getElementById('contributeButton'));
             
             // 等待交易确认
             const latestBlockhash = await connection.getLatestBlockhash();
-            
             const confirmationStrategy = {
                 signature: signature,
                 blockhash: latestBlockhash.blockhash,
@@ -192,27 +206,38 @@ async function contribute() {
                 const confirmation = await connection.confirmTransaction(confirmationStrategy);
                 if (confirmation?.value?.err) {
                     console.log('交易已发送但确认状态未知，交易签名:', signature);
-                    globalThis.alert('交易已发送！\n交易签名: ' + signature + '\n\n请在钱包中检查交易状态。');
+                    const message = referrer ? 
+                        `投资成功！\n包含10% 推荐奖励` :
+                        `投资成功！`;
+                    showCustomAlert(message, document.getElementById('contributeButton'));
                 } else {
                     console.log('交易确认成功，交易签名:', signature);
-                    globalThis.alert('投资成功！\n交易签名: ' + signature);
+                    const message = referrer ? 
+                        `投资成功！\n包含10% 推荐奖励` :
+                        `投资成功！`;
+                    showCustomAlert(message, document.getElementById('contributeButton'));
                 }
             } catch (confirmError) {
                 console.log('交易已发送但确认超时，交易签名:', signature);
-                globalThis.alert('交易已发送！\n交易签名: ' + signature + '\n\n请在钱包中检查交易状态。');
+                const message = referrer ? 
+                    `投资成功！\n包含10% 推荐奖励` :
+                    `投资成功！`;
+                showCustomAlert(message, document.getElementById('contributeButton'));
             }
-            
-            // 重置表单
-            investAmount.value = '';
-            globalThis.document.getElementById('dsnkAmount').textContent = '0 DSNK';
-            
         } catch (error) {
             console.error('交易发送失败:', error);
-            throw new Error('交易发送失败，请检查钱包余额或网络状态');
+            if (error.message.includes('0x1') ||
+                error.message.toLowerCase().includes('insufficient') ||
+                error.message.toLowerCase().includes('balance') ||
+                error.message.toLowerCase().includes('failed to send transaction')) {
+                showCustomAlert('SOL余额不足，请检查余额', document.getElementById('contributeButton'));
+            } else {
+                showCustomAlert('投资失败，请稍后重试', document.getElementById('contributeButton'));
+            }
         }
-    } catch (error) {
-        globalThis.console.error('投资失败:', error);
-        globalThis.alert('投资失败: ' + error.message);
+    } catch (err) {
+        globalThis.console.error('投资失败:', err);
+        globalThis.alert('投资失败: ' + err.message);
     }
 }
 
@@ -241,6 +266,36 @@ function updateWalletUI() {
         referralLinkInput.value = '请先连接钱包';
         walletInfo.classList.add('hidden');
     }
+}
+
+// 自定义提示框函数
+function showCustomAlert(message, buttonElement) {
+    // 移除已存在的提示框
+    const existingAlert = document.querySelector('.custom-alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    // 创建提示框
+    const alert = document.createElement('div');
+    alert.className = 'custom-alert';
+    alert.textContent = message;
+
+    // 获取按钮位置
+    const buttonRect = buttonElement.getBoundingClientRect();
+
+    // 设置提示框位置（在按钮上方）
+    alert.style.left = `${buttonRect.left + (buttonRect.width - 200) / 2}px`;
+    alert.style.top = `${buttonRect.top - 70}px`;
+
+    // 添加到页面
+    document.body.appendChild(alert);
+
+    // 3秒后自动消失
+    setTimeout(() => {
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 300);
+    }, 3000);
 }
 
 // 检查钱包连接状态
