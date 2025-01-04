@@ -336,14 +336,60 @@ document.addEventListener('click', (event) => {
 // 移动端钱包连接按钮处理
 document.addEventListener('DOMContentLoaded', () => {
     const mobileConnectWallet = document.getElementById('mobileConnectWallet');
+    const mobileWalletInfo = document.getElementById('mobileWalletInfo');
+    const mobileWalletAddress = document.getElementById('mobileWalletAddress');
+    const mobileDisconnectWallet = document.getElementById('mobileDisconnectWallet');
+
+    // 显示移动端连接按钮
+    if (mobileConnectWallet) {
+        mobileConnectWallet.classList.remove('hidden');
+    }
+
+    // 移动端连接钱包
     if (mobileConnectWallet) {
         mobileConnectWallet.addEventListener('click', async () => {
-            // 使用与PC端相同的连接逻辑
-            if (window.presaleCommon && window.presaleCommon.connectWallet) {
-                await window.presaleCommon.connectWallet();
+            try {
+                const wallet = await window.presaleCommon.connectWallet();
+                if (wallet) {
+                    mobileConnectWallet.classList.add('hidden');
+                    mobileWalletInfo.classList.remove('hidden');
+                    mobileWalletAddress.textContent = `${wallet.publicKey.toString().slice(0, 4)}...${wallet.publicKey.toString().slice(-4)}`;
+                }
+            } catch (error) {
+                console.error('Mobile wallet connection error:', error);
             }
         });
     }
+
+    // 移动端断开连接
+    if (mobileDisconnectWallet) {
+        mobileDisconnectWallet.addEventListener('click', async () => {
+            try {
+                await window.presaleCommon.disconnectWallet();
+                mobileWalletInfo.classList.add('hidden');
+                mobileConnectWallet.classList.remove('hidden');
+            } catch (error) {
+                console.error('Mobile wallet disconnection error:', error);
+            }
+        });
+    }
+
+    // 检查当前钱包状态
+    const checkWalletStatus = async () => {
+        try {
+            const wallet = await window.solana?.connect({ onlyIfTrusted: true });
+            if (wallet) {
+                mobileConnectWallet.classList.add('hidden');
+                mobileWalletInfo.classList.remove('hidden');
+                mobileWalletAddress.textContent = `${wallet.publicKey.toString().slice(0, 4)}...${wallet.publicKey.toString().slice(-4)}`;
+            }
+        } catch (error) {
+            console.log('No trusted wallet connection');
+        }
+    };
+
+    // 页面加载时检查钱包状态
+    checkWalletStatus();
 });
 
 // 导出公共函数
