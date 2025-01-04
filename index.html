@@ -62,15 +62,17 @@
             </div>
 
             <!-- 移动端菜单面板 -->
-            <div id="mobileMenu" class="hidden md:hidden">
+            <div id="mobileMenu" class="hidden md:hidden bg-[#13091B]/80 backdrop-blur-lg border-b border-[#8364E8]/20">
                 <div class="px-2 pt-2 pb-3 space-y-1">
                     <a href="#features" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">特色</a>
                     <a href="#tokenomics" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
                     <a href="#roadmap" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">路线图</a>
                     <a href="#team" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">团队</a>
-                    <button id="mobileConnectWallet" class="w-full mt-2 bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
-                        连接钱包
-                    </button>
+                    <div class="px-3 py-2">
+                        <button id="mobileConnectWallet" class="w-full connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-4 py-2 rounded-full hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
+                            <span class="text-sm font-medium">连接钱包</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

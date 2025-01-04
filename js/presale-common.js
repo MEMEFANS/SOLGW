@@ -333,6 +333,19 @@ document.addEventListener('click', (event) => {
     }
 });
 
+// 移动端钱包连接按钮处理
+document.addEventListener('DOMContentLoaded', () => {
+    const mobileConnectWallet = document.getElementById('mobileConnectWallet');
+    if (mobileConnectWallet) {
+        mobileConnectWallet.addEventListener('click', async () => {
+            // 使用与PC端相同的连接逻辑
+            if (window.presaleCommon && window.presaleCommon.connectWallet) {
+                await window.presaleCommon.connectWallet();
+            }
+        });
+    }
+});
+
 // 导出公共函数
 globalThis.window.presaleCommon = {
     updateCountdown,
