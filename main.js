@@ -6,6 +6,9 @@ const config = {
     MIN_INVESTMENT: 0.1
 };
 
+// 存储推荐人投资数据的对象
+let referralData = {};
+
 // 连接钱包
 async function connectWallet() {
     try {
@@ -84,10 +87,31 @@ async function contribute() {
         document.getElementById('solAmount').value = '';
         updateDsnkAmount();
         
+        // 更新推荐人投资数量
+        const referrer = new URLSearchParams(window.location.search).get('ref');
+        if (referrer) {
+            await updateReferralAmount(referrer, solAmount);
+        }
     } catch (err) {
         console.error('投资失败:', err);
         alert('投资失败: ' + err.message);
     }
+}
+
+// 更新推荐人投资数量
+async function updateReferralAmount(referrer, amount) {
+    if (!referralData[referrer]) {
+        referralData[referrer] = 0;
+    }
+    referralData[referrer] += amount;
+    
+    // 更新UI显示
+    const referralAmountElement = document.getElementById('referralAmount');
+    if (referralAmountElement) {
+        referralAmountElement.textContent = `Total SOL raised through your referral link: ${referralData[referrer].toFixed(2)} SOL`;
+    }
+    
+    // TODO: 可以添加将数据保存到后端的逻辑
 }
 
 // 更新 DSNK 数量显示
@@ -152,3 +176,32 @@ window.onload = () => {
 
     console.log('初始化完成');
 };
+
+// 生成推荐链接
+async function generateReferralLink() {
+    if (!window.phantom?.solana?.isPhantom) {
+        showCustomAlert('Please connect your wallet first', document.getElementById('generateReferralButton'));
+        return;
+    }
+
+    const walletAddress = await getCurrentWalletAddress();
+    if (!walletAddress) {
+        showCustomAlert('Failed to get wallet address', document.getElementById('generateReferralButton'));
+        return;
+    }
+
+    const baseUrl = window.location.origin + window.location.pathname;
+    const referralLink = `${baseUrl}?ref=${walletAddress}`;
+    
+    const referralLinkElement = document.getElementById('referralLink');
+    if (referralLinkElement) {
+        referralLinkElement.value = referralLink;
+        
+        // 显示推荐链接相关的投资总量
+        const referralAmountElement = document.getElementById('referralAmount');
+        if (referralAmountElement) {
+            const amount = referralData[walletAddress] || 0;
+            referralAmountElement.textContent = `Total SOL raised through your referral link: ${amount.toFixed(2)} SOL`;
+        }
+    }
+}

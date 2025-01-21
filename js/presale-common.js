@@ -135,15 +135,27 @@ async function contribute() {
             {
                 commitment: 'confirmed',
                 wsEndpoint: config.RPC_URL.replace('https://', 'wss://'),
-                confirmTransactionInitialTimeout: 60000
+                confirmTransactionInitialTimeout: 120000
             }
         );
 
-        // 测试连接
-        try {
-            await connection.getVersion();
-        } catch (error) {
-            console.error('RPC连接测试失败:', error);
+        // 测试连接并重试
+        let connected = false;
+        let retries = 3;
+        while (!connected && retries > 0) {
+            try {
+                await connection.getVersion();
+                connected = true;
+            } catch (error) {
+                console.error(`RPC连接测试失败，剩余重试次数: ${retries}`, error);
+                retries--;
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+        }
+
+        if (!connected) {
             throw new Error('无法连接到Solana网络，请稍后再试');
         }
 
@@ -151,29 +163,30 @@ async function contribute() {
         const referrer = getReferrer();
         const transaction = new globalThis.window.solanaWeb3.Transaction();
 
-        // 主要投资转账
+        // 创建主要转账指令
         const mainInstruction = globalThis.window.solanaWeb3.SystemProgram.transfer({
             fromPubkey: new globalThis.window.solanaWeb3.PublicKey(walletState.address),
             toPubkey: new globalThis.window.solanaWeb3.PublicKey(config.PRESALE_WALLET),
             lamports: Math.floor(amount * globalThis.window.solanaWeb3.LAMPORTS_PER_SOL)
         });
-        transaction.add(mainInstruction);
-
-        // 如果有推荐人，添加推荐奖励转账
+        
+        // 如果有推荐人,添加memo指令记录推荐人地址
         if (referrer) {
-            const referralReward = amount * 0.1; // 10% 推荐奖励
-            const referralInstruction = globalThis.window.solanaWeb3.SystemProgram.transfer({
-                fromPubkey: new globalThis.window.solanaWeb3.PublicKey(config.PRESALE_WALLET),
-                toPubkey: new globalThis.window.solanaWeb3.PublicKey(referrer),
-                lamports: Math.floor(referralReward * globalThis.window.solanaWeb3.LAMPORTS_PER_SOL)
+            const memoInstruction = new globalThis.window.solanaWeb3.TransactionInstruction({
+                keys: [],
+                programId: new globalThis.window.solanaWeb3.PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
+                data: globalThis.window.solanaWeb3.Buffer.from(referrer)
             });
-            transaction.add(referralInstruction);
+            
+            transaction.add(mainInstruction, memoInstruction);
+        } else {
+            transaction.add(mainInstruction);
         }
 
         // 获取最新的区块哈希
         let blockhash;
         try {
-            const { blockhash: latestBlockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
+            const { blockhash: latestBlockhash } = await connection.getLatestBlockhash('finalized');
             blockhash = latestBlockhash;
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = new globalThis.window.solanaWeb3.PublicKey(walletState.address);
@@ -188,7 +201,8 @@ async function contribute() {
             const signed = await provider.signTransaction(transaction);
             signature = await connection.sendRawTransaction(signed.serialize(), {
                 skipPreflight: false,
-                preflightCommitment: 'confirmed'
+                preflightCommitment: 'confirmed',
+                maxRetries: 3
             });
 
             // 显示处理中的提示
@@ -203,68 +217,111 @@ async function contribute() {
             };
             
             try {
-                const confirmation = await connection.confirmTransaction(confirmationStrategy);
+                const confirmation = await connection.confirmTransaction(confirmationStrategy, 'confirmed');
+                
                 if (confirmation?.value?.err) {
                     console.log('交易已发送但确认状态未知，交易签名:', signature);
                     const message = referrer ? 
-                        `投资成功！\n包含10% 推荐奖励` :
+                        `投资成功！通过推荐链接` :
                         `投资成功！`;
                     showCustomAlert(message, document.getElementById('contributeButton'));
                 } else {
                     console.log('交易确认成功，交易签名:', signature);
                     const message = referrer ? 
-                        `投资成功！\n包含10% 推荐奖励` :
+                        `投资成功！通过推荐链接` :
                         `投资成功！`;
                     showCustomAlert(message, document.getElementById('contributeButton'));
                 }
-            } catch (confirmError) {
+            } catch (err) {
                 console.log('交易已发送但确认超时，交易签名:', signature);
                 const message = referrer ? 
-                    `投资成功！\n包含10% 推荐奖励` :
+                    `投资成功！通过推荐链接` :
                     `投资成功！`;
                 showCustomAlert(message, document.getElementById('contributeButton'));
             }
         } catch (error) {
-            console.error('交易发送失败:', error);
-            if (error.message.includes('0x1') ||
-                error.message.toLowerCase().includes('insufficient') ||
-                error.message.toLowerCase().includes('balance') ||
-                error.message.toLowerCase().includes('failed to send transaction')) {
-                showCustomAlert('SOL余额不足，请检查余额', document.getElementById('contributeButton'));
-            } else {
-                showCustomAlert('投资失败，请稍后重试', document.getElementById('contributeButton'));
-            }
+            console.error('交易失败:', error);
+            throw new Error('交易失败: ' + error.message);
         }
     } catch (err) {
-        globalThis.console.error('投资失败:', err);
-        globalThis.alert('投资失败: ' + err.message);
+        console.error('投资失败:', err);
+        showCustomAlert('投资失败: ' + err.message, document.getElementById('contributeButton'));
     }
 }
 
 // 计算代币数量
 function calculateTokens(solAmount) {
-    return solAmount * config.DSNK_PER_SOL;
+    return solAmount * config.TDOGE_PER_SOL;
 }
 
 // UI更新函数
-function updateWalletUI() {
-    const connectButton = globalThis.document.getElementById('connectWallet');
-    const contributeForm = globalThis.document.getElementById('contributeForm');
-    const referralLinkInput = globalThis.document.getElementById('referralLink');
-    const walletInfo = globalThis.document.getElementById('walletInfo');
-    const walletAddressElement = globalThis.document.getElementById('walletAddress');
+async function updateWalletUI() {
+    const connectBtn = document.getElementById('connectWallet');
+    const disconnectBtn = document.getElementById('disconnectWallet');
+    const walletAddress = document.getElementById('walletAddress');
+    const walletInfo = document.getElementById('walletInfo');
+    const mobileConnectBtn = document.getElementById('mobileConnectWallet');
+    const mobileWalletInfo = document.getElementById('mobileWalletInfo');
+    const mobileWalletAddress = document.getElementById('mobileWalletAddress');
+    const investAmount = document.getElementById('investAmount');
+    const contributeButton = document.getElementById('contributeButton');
 
     if (walletState.connected) {
+        // 更新钱包地址显示
         const shortAddress = `${walletState.address.slice(0, 4)}...${walletState.address.slice(-4)}`;
-        connectButton.textContent = shortAddress;
-        contributeForm.classList.remove('hidden');
-        referralLinkInput.value = generateReferralLink(walletState.address);
-        walletAddressElement.textContent = shortAddress;
+        if (walletAddress) walletAddress.textContent = shortAddress;
+        if (mobileWalletAddress) mobileWalletAddress.textContent = shortAddress;
+
+        // 更新按钮状态
+        if (connectBtn) connectBtn.querySelector('span').textContent = shortAddress;
+        if (mobileConnectBtn) mobileConnectBtn.classList.add('hidden');
+        if (mobileWalletInfo) mobileWalletInfo.classList.remove('hidden');
+
+        // 启用投资输入
+        if (investAmount) {
+            investAmount.disabled = false;
+            investAmount.placeholder = '最低 0.1 SOL';
+        }
+        if (contributeButton) {
+            contributeButton.disabled = false;
+            contributeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        // 自动生成推荐链接
+        const referralLink = `${window.location.origin}${window.location.pathname}?ref=${walletState.address}`;
+        const referralLinkElement = document.getElementById('referralLink');
+        if (referralLinkElement) {
+            referralLinkElement.value = referralLink;
+            // 更新显示当前钱包地址的推荐总量
+            updateReferralDisplay(walletState.address);
+        }
     } else {
-        connectButton.textContent = '连接钱包';
-        contributeForm.classList.add('hidden');
-        referralLinkInput.value = '请先连接钱包';
-        walletInfo.classList.add('hidden');
+        // 重置显示
+        if (connectBtn) connectBtn.querySelector('span').textContent = '连接钱包';
+        if (mobileConnectBtn) mobileConnectBtn.classList.remove('hidden');
+        if (mobileWalletInfo) mobileWalletInfo.classList.add('hidden');
+        if (walletInfo) walletInfo.classList.add('hidden');
+        
+        // 禁用投资输入
+        if (investAmount) {
+            investAmount.disabled = true;
+            investAmount.placeholder = '请先连接钱包';
+        }
+        if (contributeButton) {
+            contributeButton.disabled = true;
+            contributeButton.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // 清空推荐链接
+        const referralLinkElement = document.getElementById('referralLink');
+        if (referralLinkElement) {
+            referralLinkElement.value = '';
+        }
+        // 清空推荐总量显示
+        const referralAmountElement = document.getElementById('referralAmount');
+        if (referralAmountElement) {
+            referralAmountElement.textContent = '通过你的推荐链接募集的SOL: 0 SOL';
+        }
     }
 }
 
@@ -392,12 +449,90 @@ document.addEventListener('DOMContentLoaded', () => {
     checkWalletStatus();
 });
 
+// 查询推荐人的私募记录
+async function getReferralAmount(referrerAddress) {
+    try {
+        const connection = new globalThis.window.solanaWeb3.Connection(config.RPC_URL);
+        
+        // 获取该地址的所有转账记录
+        const signatures = await connection.getSignaturesForAddress(
+            new globalThis.window.solanaWeb3.PublicKey(config.PRESALE_WALLET),
+            { limit: 1000 }
+        );
+        
+        let totalAmount = 0;
+        
+        // 遍历交易记录
+        for (const sig of signatures) {
+            const tx = await connection.getTransaction(sig.signature);
+            if (!tx) continue;
+            
+            // 检查交易的memo数据,看是否包含推荐人信息
+            const memoInstruction = tx.transaction.message.instructions.find(
+                ix => ix.programId.toString() === 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'
+            );
+            
+            if (memoInstruction && memoInstruction.data === referrerAddress) {
+                // 计算转账金额
+                const transferInstruction = tx.transaction.message.instructions.find(
+                    ix => ix.programId.toString() === '11111111111111111111111111111111'
+                );
+                
+                if (transferInstruction) {
+                    const lamports = transferInstruction.data.readBigInt64LE(0);
+                    totalAmount += Number(lamports) / globalThis.window.solanaWeb3.LAMPORTS_PER_SOL;
+                }
+            }
+        }
+        
+        return totalAmount;
+        
+    } catch (err) {
+        console.error('获取推荐记录失败:', err);
+        return 0;
+    }
+}
+
+// 更新显示推荐总量
+async function updateReferralDisplay(referrerAddress) {
+    const amount = await getReferralAmount(referrerAddress);
+    const referralAmountElement = document.getElementById('referralAmount');
+    if (referralAmountElement) {
+        referralAmountElement.textContent = `通过你的推荐链接募集的SOL: ${amount.toFixed(2)} SOL`;
+    }
+}
+
+// 生成推荐链接
+async function generateReferralLink() {
+    if (!walletState.connected) {
+        showCustomAlert('请先连接钱包', document.getElementById('generateReferralBtn'));
+        return;
+    }
+
+    const referralLink = `${globalThis.window.location.origin}${globalThis.window.location.pathname}?ref=${walletState.address}`;
+    const referralLinkElement = document.getElementById('referralLink');
+    if (referralLinkElement) {
+        referralLinkElement.value = referralLink;
+        
+        // 更新显示当前钱包地址的推荐总量
+        await updateReferralDisplay(walletState.address);
+    }
+}
+
 // 导出公共函数
 globalThis.window.presaleCommon = {
     updateCountdown,
     connectWallet,
     disconnectWallet,
     copyReferralLink,
+    generateReferralLink,
     contribute,
-    calculateTokens
+    calculateTokens,
+    getReferralAmount,
+    updateReferralDisplay
 };
+
+// 页面加载时加载推荐数据
+document.addEventListener('DOMContentLoaded', () => {
+    // loadReferralData();
+});

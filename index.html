@@ -3,11 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Dogs</title>
+    <title>TRUMP DOGE</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
     <link href="css/snake-background.css" rel="stylesheet">
     <link href="css/presale-common.css" rel="stylesheet">
+    <style>
+        /* 渐变文字效果 */
+        .gradient-text {
+            background: linear-gradient(to right, #8364E8, #64E9FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(131, 100, 232, 0.3);
+        }
+
+        /* 玻璃卡片效果 */
+        .glass-card {
+            background: rgba(19, 9, 27, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(131, 100, 232, 0.2);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(131, 100, 232, 0.2);
+            border-color: rgba(131, 100, 232, 0.4);
+        }
+
+        /* 标题样式 */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        /* 副标题样式 */
+        .section-subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* 卡片标题样式 */
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* 卡片内容样式 */
+        .card-content {
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        /* 强调文字样式 */
+        .highlight-text {
+            color: #14F195;
+            font-weight: 600;
+        }
+
+        /* 分隔线样式 */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(131, 100, 232, 0.3), transparent);
+            margin: 4rem 0;
+        }
+
+        .referral-section {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .referral-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .referral-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+        
+        .referral-amount {
+            margin-top: 10px;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        /* 输入框样式 */
+        input[type="number"] {
+            background: rgba(19, 9, 27, 0.4);
+            border: 1px solid rgba(131, 100, 232, 0.3);
+            border-radius: 12px;
+            color: #14F195;
+            padding: 12px 16px;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #64E9FF;
+            box-shadow: 0 0 15px rgba(100, 233, 255, 0.2);
+        }
+
+        input[type="number"]::placeholder {
+            color: rgba(131, 100, 232, 0.6);
+        }
+
+        /* 移除输入框的上下箭头 */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -webkit-appearance: textfield;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+    </style>
 </head>
 <body class="antialiased text-[#14F195]">
     <div class="snake-background">
@@ -22,17 +157,19 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex items-center space-x-2">
-                        <img class="h-8 md:h-10 w-auto" src="./logo.png" alt="Bitcoin Dogs">
-                        <span class="text-[#14F195] text-xl md:text-2xl font-bold tracking-wider">Dsnk</span>
+                        <a href="#" class="flex items-center">
+                            <img class="h-12 w-12" src="./logo.png" alt="TRUMP DOGE">
+                        </a>
+                        <span class="text-[#14F195] text-xl md:text-2xl font-bold tracking-wider">TRUMP DOGE</span>
                     </div>
                 </div>
                 
                 <!-- 桌面端菜单 -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">特色</a>
+                    <a href="#features" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">项目亮点</a>
                     <a href="#tokenomics" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
-                    <a href="#roadmap" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">路线图</a>
-                    <a href="#team" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">团队</a>
+                    <a href="#roadmap" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">发展路线</a>
+                    <a href="#team" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">核心团队</a>
                     <div id="walletContainer" class="relative">
                         <button id="connectWallet" class="connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-8 py-3 rounded-full hover:opacity-90 transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
                             <span class="text-lg font-medium">连接钱包</span>
@@ -64,10 +201,10 @@
             <!-- 移动端菜单面板 -->
             <div id="mobileMenu" class="hidden md:hidden fixed top-[60px] left-0 right-0 bg-[#13091B]/95 backdrop-blur-xl border-b border-[#8364E8]/30">
                 <div class="px-2 pt-2 pb-3 space-y-1">
-                    <a href="#features" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">特色</a>
+                    <a href="#features" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">项目亮点</a>
                     <a href="#tokenomics" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
-                    <a href="#roadmap" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">路线图</a>
-                    <a href="#team" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">团队</a>
+                    <a href="#roadmap" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">发展路线</a>
+                    <a href="#team" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">核心团队</a>
                     <div class="px-3 py-2">
                         <div id="mobileWalletContainer" class="relative">
                             <button id="mobileConnectWallet" class="hidden w-full connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-4 py-2 rounded-full hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
@@ -96,7 +233,7 @@
                 <h2 class="text-2xl font-bold text-[#8364E8] mb-6">距离私募结束还有</h2>
                 <div class="grid grid-cols-4 gap-4 text-center">
                     <div class="countdown-item">
-                        <div id="days" class="text-4xl font-bold text-[#64E9FF]">30</div>
+                        <div id="days" class="text-4xl font-bold text-[#64E9FF]">07</div>
                         <div class="text-sm text-[#9945FF]">天</div>
                     </div>
                     <div class="countdown-item">
@@ -124,7 +261,7 @@
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">私募价格</h3>
-                        <p class="text-[#14F195]">1 SOL = 10000 DSNK</p>
+                        <p class="text-[#14F195]">1 SOL = 225,000 TDOGE</p>
                     </div>
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">最低投资</h3>
@@ -132,11 +269,11 @@
                     </div>
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">总发行量</h3>
-                        <p class="text-[#14F195]">100,000,000 DSNK</p>
+                        <p class="text-[#14F195]">10,000,000,000 TDOGE</p>
                     </div>
                     <div class="info-card">
                         <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">私募比例</h3>
-                        <p class="text-[#14F195]">10%</p>
+                        <p class="text-[#14F195]">45%</p>
                     </div>
                 </div>
 
@@ -144,188 +281,244 @@
                 <div class="mb-6">
                     <div class="flex justify-between mb-2">
                         <span class="text-sm text-[#9945FF]">已募集</span>
-                        <span class="text-sm text-[#14F195]">500,000 / 1,000,000 SOL</span>
+                        <span class="text-sm text-[#14F195]">0 / 2,000 SOL</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 50%"></div>
+                        <div class="progress-fill" style="width: 0%"></div>
                     </div>
                 </div>
 
                 <!-- 投资表单 -->
-                <div id="contributeForm" class="hidden">
-                    <div class="gradient-border rounded-lg bg-[#13091B] p-4 mb-6">
-                        <div class="flex flex-col space-y-4">
-                            <div class="flex justify-between items-center">
-                                <label class="text-[#9945FF]">投资金额 (SOL)</label>
-                                <span class="text-[#14F195]">将获得: <span id="dsnkAmount" class="font-bold">0 DSNK</span></span>
-                            </div>
-                            <input type="number" 
-                                   id="investAmount" 
-                                   min="0.1" 
-                                   step="0.1" 
-                                   placeholder="最低 0.1 SOL" 
-                                   class="presale-input">
+                <div class="invest-form space-y-4">
+                    <div class="flex flex-col space-y-4">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[#9945FF]">投资金额 (SOL)</label>
+                            <span class="text-[#14F195]">将获得: <span id="tdogeAmount" class="font-bold">0 TDOGE</span></span>
                         </div>
+                        <input type="number" 
+                               id="investAmount" 
+                               min="0.1" 
+                               step="0.1" 
+                               placeholder="最低 0.1 SOL" 
+                               class="w-full bg-[#13091B] text-[#14F195] px-4 py-3 rounded-lg border border-[#8364E8] focus:outline-none focus:border-[#14F195] focus:ring-1 focus:ring-[#14F195] placeholder-[#8364E8]">
                     </div>
-
-                    <button id="contributeButton"
-                            class="presale-button w-full mb-6">
-                        确认私募
+                    
+                    <button id="contributeButton" 
+                            class="w-full py-3 bg-[#13091B] text-[#14F195] rounded-lg border border-[#8364E8] hover:bg-[#1D0F29] hover:border-[#14F195] transition-all duration-300 flex items-center justify-center space-x-2">
+                        <span class="text-lg font-medium">确认私募</span>
                     </button>
                 </div>
 
                 <!-- 推荐链接区域 -->
-                <div class="gradient-border rounded-lg bg-[#13091B] p-4 mt-6">
-                    <h3 class="text-[#9945FF] mb-2">推荐奖励</h3>
-                    <p class="text-[#14F195] mb-2">分享您的推荐链接，获得被推荐人投资额的 10% SOL 奖励！</p>
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="text" 
-                               id="referralLink" 
-                               class="presale-input" 
-                               value="请先连接钱包" 
-                               readonly>
-                        <button id="copyReferral" 
-                                class="presale-button">
+                <div class="referral-section">
+                    <h3 class="text-xl font-bold text-[#8364E8] mb-4">推荐链接</h3>
+                    <div class="referral-container">
+                        <input type="text" id="referralLink" readonly class="referral-input" placeholder="连接钱包生成推荐链接">
+                        <button id="generateReferralBtn" class="px-4 py-2 bg-[#13091B] text-[#14F195] rounded-lg border border-[#8364E8] hover:bg-[#1D0F29] hover:border-[#14F195] transition-all duration-300">
+                            生成链接
+                        </button>
+                        <button id="copyReferralBtn" class="px-4 py-2 bg-[#13091B] text-[#14F195] rounded-lg border border-[#8364E8] hover:bg-[#1D0F29] hover:border-[#14F195] transition-all duration-300">
                             复制链接
                         </button>
                     </div>
+                    <p id="referralAmount" class="text-[#9945FF] mt-2">通过你的推荐链接募集的SOL: <span class="text-[#14F195]">0.00 SOL</span></p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- 游戏特色 -->
-    <section id="features" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">游戏特色</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                <div class="glass-card hover-glow p-8">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">PVP 对战</h3>
-                    <p class="text-[#9945FF]">多人实时对战，策略与技巧的完美结合</p>
-                </div>
-                <div class="glass-card hover-glow p-8">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 资产</h3>
-                    <p class="text-[#9945FF]">独特的游戏道具和角色，以 NFT 形式存在</p>
-                </div>
-                <div class="glass-card hover-glow p-8">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">Play to Earn</h3>
-                    <p class="text-[#9945FF]">边玩边赚，打造可持续的游戏经济系统</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- 代币经济 -->
-    <section id="tokenomics" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">代币经济</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+    <section id="tokenomics" class="py-16 bg-[#13091B]/50">
+        <div class="max-w-3xl mx-auto space-y-8">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#64E9FF]">代币经济</h2>
+            
+            <!-- 总量信息 -->
+            <div class="glass-card hover-glow p-6">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold mb-4 text-[#14F195]">代币总量</h3>
+                    <p class="text-3xl font-bold text-[#9945FF]">10,000,000,000 TDOGE</p>
+                    <p class="text-[#9945FF] mt-2">（100亿枚）</p>
+                </div>
+            </div>
+
+            <!-- 代币分配 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">私募分配</h3>
-                    <p class="text-[#9945FF]">30% 用于私募</p>
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">特朗普基金会</h3>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[#9945FF]">基金会持有</p>
+                        <p class="text-2xl font-bold text-[#9945FF]">50%</p>
+                    </div>
+                    <p class="text-sm text-[#9945FF] mt-2">用于支持特朗普相关活动</p>
                 </div>
                 <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">流动性</h3>
-                    <p class="text-[#9945FF]">40% 用于提供流动性</p>
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">私募分配</h3>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[#9945FF]">私募额度</p>
+                        <p class="text-2xl font-bold text-[#9945FF]">45%</p>
+                    </div>
+                    <p class="text-sm text-[#9945FF] mt-2">用于早期支持者</p>
                 </div>
-                <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">团队保留</h3>
-                    <p class="text-[#9945FF]">30% 团队持有（锁仓）</p>
+            </div>
+
+            <!-- 代币使用计划 -->
+            <div class="glass-card hover-glow p-6">
+                <h3 class="text-xl font-bold mb-4 text-[#14F195]">代币使用计划</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[#9945FF]">特朗普基金会支持</p>
+                        <p class="text-[#9945FF]">50%</p>
+                    </div>
+                    <div class="w-full bg-[#1A1A1A] rounded-full h-4">
+                        <div class="bg-gradient-to-r from-[#8364E8] to-[#64E9FF] h-4 rounded-full" style="width: 50%"></div>
+                    </div>
+                    <div class="flex items-center justify-between mt-4">
+                        <p class="text-[#9945FF]">私募分配</p>
+                        <p class="text-[#9945FF]">45%</p>
+                    </div>
+                    <div class="w-full bg-[#1A1A1A] rounded-full h-4">
+                        <div class="bg-gradient-to-r from-[#8364E8] to-[#64E9FF] h-4 rounded-full" style="width: 45%"></div>
+                    </div>
+                    <div class="flex items-center justify-between mt-4">
+                        <p class="text-[#9945FF]">项目发展</p>
+                        <p class="text-[#9945FF]">5%</p>
+                    </div>
+                    <div class="w-full bg-[#1A1A1A] rounded-full h-4">
+                        <div class="bg-gradient-to-r from-[#8364E8] to-[#64E9FF] h-4 rounded-full" style="width: 5%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 私募详情 -->
+            <div class="glass-card hover-glow p-6">
+                <h3 class="text-xl font-bold mb-4 text-[#14F195]">私募详情</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[#9945FF] mb-2">私募价格</p>
+                        <p class="text-xl font-bold text-[#9945FF]">1 SOL = 225,000 TDOGE</p>
+                    </div>
+                    <div>
+                        <p class="text-[#9945FF] mb-2">私募目标</p>
+                        <p class="text-xl font-bold text-[#9945FF]">2,000 SOL</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 路线图 -->
-    <section id="roadmap" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">发展路线</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+    <!-- 发展路线 -->
+    <section id="roadmap" class="py-16 bg-[#13091B]/50">
+        <div class="max-w-3xl mx-auto space-y-6">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#64E9FF]">发展路线</h2>
+            <div class="space-y-6">
                 <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">第一阶段</h3>
-                    <ul class="text-[#9945FF] space-y-2">
-                        <li>• 完成私募</li>
-                        <li>• 上线DEX</li>
-                        <li>• 开启流动性挖矿</li>
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">第一阶段：启动</h3>
+                    <ul class="list-disc list-inside text-[#9945FF] space-y-2">
+                        <li>完成私募</li>
+                        <li>上线DEX交易所</li>
+                        <li>启动特朗普基金会合作</li>
+                        <li>开始全球社区建设</li>
                     </ul>
                 </div>
                 <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">第二阶段</h3>
-                    <ul class="text-[#9945FF] space-y-2">
-                        <li>• 游戏开发</li>
-                        <li>• NFT设计</li>
-                        <li>• 社区建设</li>
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">第二阶段：发展</h3>
+                    <ul class="list-disc list-inside text-[#9945FF] space-y-2">
+                        <li>上线质押系统</li>
+                        <li>开展特朗普主题活动</li>
+                        <li>扩大全球社区</li>
+                        <li>加强媒体合作</li>
                     </ul>
                 </div>
                 <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">第三阶段</h3>
-                    <ul class="text-[#9945FF] space-y-2">
-                        <li>• 游戏测试</li>
-                        <li>• NFT空投</li>
-                        <li>• 市场推广</li>
-                    </ul>
-                </div>
-                <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">第四阶段</h3>
-                    <ul class="text-[#9945FF] space-y-2">
-                        <li>• 游戏上线</li>
-                        <li>• 跨链整合</li>
-                        <li>• 生态扩展</li>
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">第三阶段：扩张</h3>
+                    <ul class="list-disc list-inside text-[#9945FF] space-y-2">
+                        <li>上线主流交易所</li>
+                        <li>推出跨链方案</li>
+                        <li>深化基金会合作</li>
+                        <li>拓展全球影响力</li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 团队介绍 -->
-    <section id="team" class="py-8 md:py-20 bg-[#13091B]/50 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 gradient-text">核心团队</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-                <div class="glass-card hover-glow p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                    <h3 class="text-xl font-bold text-blue-400 mb-2">首席执行官</h3>
-                    <p class="text-sm text-[#14F195] mb-2">John Doe</p>
-                    <p class="text-[#9945FF]">连续创业者，Web3领域专家</p>
+    <!-- 核心团队 -->
+    <section id="team" class="py-16">
+        <div class="max-w-3xl mx-auto space-y-6">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#64E9FF]">核心团队</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">基金会团队</h3>
+                    <p class="text-[#9945FF]">特朗普基金会核心成员，负责项目战略方向和资源对接</p>
                 </div>
-                <div class="glass-card hover-glow p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                    <h3 class="text-xl font-bold text-blue-400 mb-2">技术总监</h3>
-                    <p class="text-sm text-[#14F195] mb-2">Mike Chen</p>
-                    <p class="text-[#9945FF]">前Google工程师，区块链专家</p>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">技术团队</h3>
+                    <p class="text-[#9945FF]">资深区块链开发团队，专注于Solana生态系统开发</p>
                 </div>
-                <div class="glass-card hover-glow p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                    <h3 class="text-xl font-bold text-blue-400 mb-2">产品总监</h3>
-                    <p class="text-sm text-[#14F195] mb-2">Sarah Wang</p>
-                    <p class="text-[#9945FF]">资深游戏制作人</p>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">运营团队</h3>
+                    <p class="text-[#9945FF]">国际化运营团队，拥有丰富的社区管理和市场推广经验</p>
                 </div>
-                <div class="glass-card hover-glow p-6 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                    <h3 class="text-xl font-bold text-blue-400 mb-2">市场总监</h3>
-                    <p class="text-sm text-[#14F195] mb-2">Lisa Zhang</p>
-                    <p class="text-[#9945FF]">营销专家，社区运营</p>
+                <div class="glass-card hover-glow p-6">
+                    <h3 class="text-xl font-bold mb-4 text-[#14F195]">顾问团队</h3>
+                    <p class="text-[#9945FF]">由政治、金融和区块链领域的资深专家组成</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目亮点 -->
+    <section id="features" class="py-20">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="section-title gradient-text">项目亮点</h2>
+            <p class="section-subtitle text-[#9945FF]">特朗普王者归来，TRUMP DOGE引领Web3.0新纪元</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">基金会官方支持</h3>
+                    <p class="card-content text-[#9945FF]">特朗普基金会首次官方支持的加密货币，50%代币直接用于支持总统施政计划，打造最具影响力的政治MEME代币</p>
+                </div>
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">稀缺投资机遇</h3>
+                    <p class="card-content text-[#9945FF]">45%代币用于私募，限额2,000 SOL。把握特朗普新政时代的投资良机，共同见证历史</p>
+                </div>
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">全球社区力量</h3>
+                    <p class="card-content text-[#9945FF]">连接全球特朗普支持者，打造最强政治MEME社区，共同支持总统改革计划</p>
+                </div>
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">巨大发展潜力</h3>
+                    <p class="card-content text-[#9945FF]">基金会权威背书+总统政策支持+全球社区力量，三重优势助力价值提升</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- 常见问题 -->
-    <section class="py-10 px-4">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-12 gradient-text">常见问题</h2>
-            <div class="max-w-3xl mx-auto space-y-6">
-                <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">如何开始游戏？</h3>
-                    <p class="text-[#9945FF]">连接您的 Solana 钱包，购买 DSNK 代币即可开始游戏</p>
+    <section id="faq" class="py-20">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="section-title gradient-text">常见问题</h2>
+            <p class="section-subtitle text-[#9945FF]">了解TRUMP DOGE的优势与发展前景</p>
+            <div class="space-y-8">
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">为什么选择TRUMP DOGE？</h3>
+                    <p class="card-content text-[#9945FF]">TRUMP DOGE是首个获得特朗普基金会官方支持的加密货币，50%代币直接用于支持总统施政计划。随着新政策的推进，项目将获得前所未有的发展机遇</p>
                 </div>
-                <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">游戏收益如何分配？</h3>
-                    <p class="text-[#9945FF]">游戏内获得的收益将直接发放到您的钱包地址</p>
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">如何把握投资机会？</h3>
+                    <p class="card-content text-[#9945FF]">参与私募是获得最优惠价格的唯一途径。私募总额仅2,000 SOL，每SOL可获225,000 TDOGE。<span class="highlight-text">机会稀缺，建议尽早参与</span></p>
                 </div>
-                <div class="glass-card hover-glow p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">NFT 有什么用途？</h3>
-                    <p class="text-[#9945FF]">NFT 可用于游戏内的角色升级、装备强化，也可以交易</p>
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">项目有哪些优势？</h3>
+                    <p class="card-content text-[#9945FF]">
+                        <span class="highlight-text">1. 特朗普基金会官方支持</span>，极高信任度<br>
+                        <span class="highlight-text">2. 总统政策支持</span>，发展前景广阔<br>
+                        <span class="highlight-text">3. 私募价格优惠</span>，升值空间巨大<br>
+                        <span class="highlight-text">4. 全球最大政治MEME社区支持</span>
+                    </p>
+                </div>
+                <div class="glass-card p-8">
+                    <h3 class="card-title text-[#14F195]">如何参与社区？</h3>
+                    <p class="card-content text-[#9945FF]">持有TDOGE即可加入全球最大的特朗普支持者社区，参与重大决策投票，并享有独家活动参与权。让我们一起支持总统，共创美好未来！</p>
                 </div>
             </div>
         </div>
@@ -378,27 +571,66 @@
     <script src="js/snake-background.js"></script>
     <script>
         // 初始化
-        presaleCommon.updateCountdown();
-        setInterval(presaleCommon.updateCountdown, 1000);
+        document.addEventListener('DOMContentLoaded', function() {
+            // 钱包连接相关
+            document.getElementById('connectWallet').addEventListener('click', presaleCommon.connectWallet);
+            document.getElementById('disconnectWallet').addEventListener('click', presaleCommon.disconnectWallet);
+            
+            // 推荐链接相关
+            document.getElementById('copyReferralBtn').addEventListener('click', presaleCommon.copyReferralLink);
+            document.getElementById('generateReferralBtn').addEventListener('click', presaleCommon.generateReferralLink);
+            
+            // 投资相关
+            document.getElementById('contributeButton').addEventListener('click', presaleCommon.contribute);
+            const investAmountInput = document.getElementById('investAmount');
+            if (investAmountInput) {
+                investAmountInput.addEventListener('input', (e) => {
+                    const amount = parseFloat(e.target.value) || 0;
+                    const tdogeAmount = presaleCommon.calculateTokens(amount);
+                    document.getElementById('tdogeAmount').textContent = `${tdogeAmount} TDOGE`;
+                });
+            }
 
-        // 事件监听
-        document.getElementById('connectWallet').addEventListener('click', presaleCommon.connectWallet);
-        document.getElementById('disconnectWallet').addEventListener('click', presaleCommon.disconnectWallet);
-        document.getElementById('copyReferral').addEventListener('click', presaleCommon.copyReferralLink);
-        document.getElementById('contributeButton').addEventListener('click', presaleCommon.contribute);
+            // 移动端菜单
+            document.getElementById('menuButton').addEventListener('click', () => {
+                const mobileMenu = document.getElementById('mobileMenu');
+                mobileMenu.classList.toggle('hidden');
+            });
+        });
         
-        // 投资金额输入监听
-        document.getElementById('investAmount').addEventListener('input', (e) => {
-            const amount = parseFloat(e.target.value) || 0;
-            const dsnkAmount = presaleCommon.calculateTokens(amount);
-            document.getElementById('dsnkAmount').textContent = `${dsnkAmount} DSNK`;
-        });
-
-        // 移动端菜单
-        document.getElementById('menuButton').addEventListener('click', () => {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        });
+        // 初始化倒计时
+        function initializeCountdown() {
+            // 设置倒计时结束时间为7天后
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 7);
+            
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = endDate.getTime() - now;
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+                
+                if (distance < 0) {
+                    clearInterval(countdownTimer);
+                    document.getElementById('days').textContent = '00';
+                    document.getElementById('hours').textContent = '00';
+                    document.getElementById('minutes').textContent = '00';
+                    document.getElementById('seconds').textContent = '00';
+                }
+            }
+            
+            updateCountdown();
+            const countdownTimer = setInterval(updateCountdown, 1000);
+        }
+        initializeCountdown();
     </script>
 </body>
 </html>
