@@ -1,3 +1,12 @@
+// 检测是否是移动端钱包浏览器
+function isMobileWallet() {
+    return (
+        globalThis.window.solana && 
+        globalThis.window.solana.isPhantom && 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(globalThis.navigator.userAgent)
+    );
+}
+
 // 钱包状态管理
 const walletState = {
     connected: false,
@@ -37,10 +46,27 @@ function getReferrer() {
     return (ref && ref.length === 44) ? ref : null;
 }
 
-function generateReferralLink(walletAddress) {
-    if (!walletAddress) return '';
-    const baseUrl = globalThis.window.location.href.split('?')[0];
-    return `${baseUrl}?ref=${walletAddress}`;
+function generateReferralLink() {
+    try {
+        if (!walletState.connected || !walletState.address) {
+            showCustomAlert('请先连接钱包', null);
+            return;
+        }
+        
+        const baseUrl = globalThis.window.location.origin + globalThis.window.location.pathname;
+        const referralLink = `${baseUrl}?ref=${walletState.address}`;
+        
+        // 更新UI显示
+        const referralLinkElement = globalThis.document.getElementById('referralLink');
+        if (referralLinkElement) {
+            referralLinkElement.value = referralLink;
+        }
+        
+        return referralLink;
+    } catch (err) {
+        globalThis.console.error('生成推荐链接失败:', err);
+        return '';
+    }
 }
 
 async function copyReferralLink() {
@@ -58,25 +84,22 @@ async function copyReferralLink() {
 
 // 钱包连接功能
 async function connectWallet() {
-    if (walletState.connected) {
-        toggleWalletInfo();
-        return;
-    }
-
     try {
-        // 检测是否是移动端钱包浏览器
-        function isMobileWallet() {
-            return (
-                globalThis.window.solana && 
-                globalThis.window.solana.isPhantom && 
-                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(globalThis.navigator.userAgent)
-            );
-        }
-
         // 检查是否有Solana对象
         if (!globalThis.window.solana) {
-            globalThis.alert('请安装 Phantom 钱包!');
-            globalThis.window.open('https://phantom.app/', '_blank');
+            if (isMobileWallet()) {
+                showCustomAlert('请在Phantom钱包App内打开此页面', null);
+                return;
+            } else {
+                showCustomAlert('请安装 Phantom 钱包!', null);
+                globalThis.window.open('https://phantom.app/', '_blank');
+                return;
+            }
+        }
+
+        // 如果已经连接，切换钱包信息显示
+        if (walletState.connected) {
+            toggleWalletInfo();
             return;
         }
 
@@ -87,6 +110,7 @@ async function connectWallet() {
                 walletState.address = publicKey.toString();
                 walletState.connected = true;
                 updateWalletUI();
+                showCustomAlert('钱包已连接', null);
                 return;
             }
         }
@@ -95,11 +119,11 @@ async function connectWallet() {
         const resp = await globalThis.window.solana.connect();
         walletState.address = resp.publicKey.toString();
         walletState.connected = true;
-        
         updateWalletUI();
+        showCustomAlert('钱包连接成功！', null);
     } catch (err) {
         globalThis.console.error('连接钱包失败:', err);
-        globalThis.alert('连接钱包失败: ' + err.message);
+        showCustomAlert('连接钱包失败: ' + err.message, null);
     }
 }
 
@@ -121,14 +145,28 @@ async function disconnectWallet() {
 
 // 切换钱包信息显示
 function toggleWalletInfo() {
-    const walletInfo = document.getElementById('walletInfo');
-    walletInfo.classList.toggle('hidden');
+    try {
+        if (!walletState.connected) return;
+        
+        const walletInfo = globalThis.document.getElementById('walletInfo');
+        if (walletInfo) {
+            walletInfo.classList.toggle('hidden');
+        }
+    } catch (err) {
+        globalThis.console.error('切换钱包信息显示失败:', err);
+    }
 }
 
 // 隐藏钱包信息
 function hideWalletInfo() {
-    const walletInfo = document.getElementById('walletInfo');
-    walletInfo.classList.add('hidden');
+    try {
+        const walletInfo = globalThis.document.getElementById('walletInfo');
+        if (walletInfo) {
+            walletInfo.classList.add('hidden');
+        }
+    } catch (err) {
+        globalThis.console.error('隐藏钱包信息失败:', err);
+    }
 }
 
 // 投资功能
@@ -278,103 +316,116 @@ function calculateTokens(solAmount) {
 
 // UI更新函数
 async function updateWalletUI() {
-    const connectBtn = document.getElementById('connectWallet');
-    const disconnectBtn = document.getElementById('disconnectWallet');
-    const walletAddress = document.getElementById('walletAddress');
-    const walletInfo = document.getElementById('walletInfo');
-    const mobileConnectBtn = document.getElementById('mobileConnectWallet');
-    const mobileWalletInfo = document.getElementById('mobileWalletInfo');
-    const mobileWalletAddress = document.getElementById('mobileWalletAddress');
-    const investAmount = document.getElementById('investAmount');
-    const contributeButton = document.getElementById('contributeButton');
+    try {
+        const connectButton = globalThis.document.getElementById('connectWallet');
+        const walletInfo = globalThis.document.getElementById('walletInfo');
+        const walletAddress = globalThis.document.getElementById('walletAddress');
+        const walletBalance = globalThis.document.getElementById('walletBalance');
+        const contributeButton = globalThis.document.getElementById('contributeButton');
+        const investAmount = globalThis.document.getElementById('investAmount');
 
-    if (walletState.connected) {
-        // 更新钱包地址显示
-        const shortAddress = `${walletState.address.slice(0, 4)}...${walletState.address.slice(-4)}`;
-        if (walletAddress) walletAddress.textContent = shortAddress;
-        if (mobileWalletAddress) mobileWalletAddress.textContent = shortAddress;
+        if (walletState.connected && walletState.address) {
+            // 更新连接按钮状态
+            if (connectButton) {
+                connectButton.textContent = '已连接';
+                connectButton.classList.add('connected');
+            }
+            
+            // 初始状态下隐藏钱包信息，只在点击时显示
+            if (walletInfo) {
+                walletInfo.classList.add('hidden');
+            }
 
-        // 更新按钮状态
-        if (connectBtn) connectBtn.querySelector('span').textContent = shortAddress;
-        if (mobileConnectBtn) mobileConnectBtn.classList.add('hidden');
-        if (mobileWalletInfo) mobileWalletInfo.classList.remove('hidden');
+            // 更新钱包地址（但保持隐藏状态）
+            if (walletAddress) {
+                const shortAddress = `${walletState.address.slice(0, 4)}...${walletState.address.slice(-4)}`;
+                walletAddress.textContent = shortAddress;
+            }
 
-        // 启用投资输入
-        if (investAmount) {
-            investAmount.disabled = false;
-            investAmount.placeholder = '最低 0.1 SOL';
-        }
-        if (contributeButton) {
-            contributeButton.disabled = false;
-            contributeButton.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
+            // 更新钱包余额（但保持隐藏状态）
+            if (walletBalance) {
+                try {
+                    const connection = new globalThis.window.solanaWeb3.Connection(config.RPC_URL);
+                    const balance = await connection.getBalance(new globalThis.window.solanaWeb3.PublicKey(walletState.address));
+                    walletState.balance = balance / 1e9;
+                    walletBalance.textContent = `${walletState.balance.toFixed(4)} SOL`;
+                } catch (err) {
+                    globalThis.console.error('获取钱包余额失败:', err);
+                }
+            }
 
-        // 自动生成推荐链接
-        const referralLink = `${window.location.origin}${window.location.pathname}?ref=${walletState.address}`;
-        const referralLinkElement = document.getElementById('referralLink');
-        if (referralLinkElement) {
-            referralLinkElement.value = referralLink;
-            // 更新显示当前钱包地址的推荐总量
-            updateReferralDisplay(walletState.address);
-        }
-    } else {
-        // 重置显示
-        if (connectBtn) connectBtn.querySelector('span').textContent = '连接钱包';
-        if (mobileConnectBtn) mobileConnectBtn.classList.remove('hidden');
-        if (mobileWalletInfo) mobileWalletInfo.classList.add('hidden');
-        if (walletInfo) walletInfo.classList.add('hidden');
-        
-        // 禁用投资输入
-        if (investAmount) {
-            investAmount.disabled = true;
-            investAmount.placeholder = '请先连接钱包';
-        }
-        if (contributeButton) {
-            contributeButton.disabled = true;
-            contributeButton.classList.add('opacity-50', 'cursor-not-allowed');
-        }
+            // 启用投资功能
+            if (investAmount) {
+                investAmount.disabled = false;
+                investAmount.placeholder = '最低 0.1 SOL';
+            }
+            if (contributeButton) {
+                contributeButton.disabled = false;
+                contributeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
 
-        // 清空推荐链接
-        const referralLinkElement = document.getElementById('referralLink');
-        if (referralLinkElement) {
-            referralLinkElement.value = '';
+            // 自动生成推荐链接
+            generateReferralLink();
+            
+            // 获取并显示推荐奖励
+            getReferralAmount();
+        } else {
+            // 重置连接按钮状态
+            if (connectButton) {
+                connectButton.textContent = '连接钱包';
+                connectButton.classList.remove('connected');
+            }
+
+            // 隐藏钱包信息区域
+            if (walletInfo) {
+                walletInfo.classList.add('hidden');
+            }
+
+            // 禁用投资功能
+            if (investAmount) {
+                investAmount.disabled = true;
+                investAmount.placeholder = '请先连接钱包';
+            }
+            if (contributeButton) {
+                contributeButton.disabled = true;
+                contributeButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            // 清空推荐链接
+            const referralLinkElement = globalThis.document.getElementById('referralLink');
+            if (referralLinkElement) {
+                referralLinkElement.value = '';
+            }
         }
-        // 清空推荐总量显示
-        const referralAmountElement = document.getElementById('referralAmount');
-        if (referralAmountElement) {
-            referralAmountElement.textContent = '通过你的推荐链接募集的SOL: 0 SOL';
-        }
+    } catch (err) {
+        globalThis.console.error('更新钱包UI失败:', err);
     }
 }
 
 // 自定义提示框函数
 function showCustomAlert(message, buttonElement) {
-    // 移除已存在的提示框
-    const existingAlert = document.querySelector('.custom-alert');
-    if (existingAlert) {
-        existingAlert.remove();
+    try {
+        const alertDiv = globalThis.document.createElement('div');
+        alertDiv.className = 'custom-alert';
+        alertDiv.textContent = message;
+        
+        // 如果存在旧的提示框，先移除
+        const oldAlert = globalThis.document.querySelector('.custom-alert');
+        if (oldAlert) {
+            oldAlert.remove();
+        }
+        
+        globalThis.document.body.appendChild(alertDiv);
+        
+        // 3秒后自动移除
+        setTimeout(() => {
+            if (alertDiv && alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 3000);
+    } catch (err) {
+        globalThis.console.error('显示提示框失败:', err);
     }
-
-    // 创建提示框
-    const alert = document.createElement('div');
-    alert.className = 'custom-alert';
-    alert.textContent = message;
-
-    // 获取按钮位置
-    const buttonRect = buttonElement.getBoundingClientRect();
-
-    // 设置提示框位置（在按钮上方）
-    alert.style.left = `${buttonRect.left + (buttonRect.width - 200) / 2}px`;
-    alert.style.top = `${buttonRect.top - 70}px`;
-
-    // 添加到页面
-    document.body.appendChild(alert);
-
-    // 3秒后自动消失
-    setTimeout(() => {
-        alert.style.opacity = '0';
-        setTimeout(() => alert.remove(), 300);
-    }, 3000);
 }
 
 // 检查钱包连接状态
@@ -384,8 +435,8 @@ globalThis.window.addEventListener('load', async () => {
         if (provider) {
             if (provider.isPhantom) {
                 const resp = await provider.connect({ onlyIfTrusted: true });
-                walletState.connected = true;
                 walletState.address = resp.publicKey.toString();
+                walletState.connected = true;
                 updateWalletUI();
             }
         }
@@ -410,7 +461,7 @@ async function checkWalletStatus() {
             }
             
             // 检查PC端钱包状态
-            if (provider.isPhantom && provider.isConnected) {
+            if (provider.isPhantom && provider.isConnected && provider.publicKey) {
                 walletState.address = provider.publicKey.toString();
                 walletState.connected = true;
                 updateWalletUI();
@@ -536,37 +587,88 @@ async function updateReferralDisplay(referrerAddress) {
     }
 }
 
-// 生成推荐链接
-async function generateReferralLink() {
-    if (!walletState.connected) {
-        showCustomAlert('请先连接钱包', document.getElementById('generateReferralBtn'));
-        return;
-    }
-
-    const referralLink = `${globalThis.window.location.origin}${globalThis.window.location.pathname}?ref=${walletState.address}`;
-    const referralLinkElement = document.getElementById('referralLink');
-    if (referralLinkElement) {
-        referralLinkElement.value = referralLink;
-        
-        // 更新显示当前钱包地址的推荐总量
-        await updateReferralDisplay(walletState.address);
-    }
-}
-
 // 导出公共函数
 globalThis.window.presaleCommon = {
     updateCountdown,
     connectWallet,
     disconnectWallet,
-    copyReferralLink,
-    generateReferralLink,
     contribute,
     calculateTokens,
+    copyReferralLink,
+    generateReferralLink,
     getReferralAmount,
-    updateReferralDisplay
+    updateReferralDisplay,
+    checkWalletStatus,
+    updateWalletUI,
+    isMobileWallet,
+    showCustomAlert,
+    setupWalletEventListeners
 };
 
-// 页面加载时加载推荐数据
-document.addEventListener('DOMContentLoaded', () => {
-    // loadReferralData();
+// 初始化事件监听器
+function initializeEventListeners() {
+    try {
+        const connectWalletBtn = globalThis.document.getElementById('connectWallet');
+        if (connectWalletBtn) {
+            connectWalletBtn.removeEventListener('click', connectWallet);
+            connectWalletBtn.addEventListener('click', connectWallet);
+        }
+        
+        const copyLinkBtn = globalThis.document.getElementById('copyLink');
+        if (copyLinkBtn) {
+            copyLinkBtn.removeEventListener('click', copyReferralLink);
+            copyLinkBtn.addEventListener('click', copyReferralLink);
+        }
+        
+        const contributeBtn = globalThis.document.getElementById('contributeButton');
+        if (contributeBtn) {
+            contributeBtn.removeEventListener('click', contribute);
+            contributeBtn.addEventListener('click', contribute);
+        }
+    } catch (err) {
+        globalThis.console.error('初始化事件监听器失败:', err);
+    }
+}
+
+// 页面加载时初始化
+globalThis.window.addEventListener('DOMContentLoaded', () => {
+    try {
+        setupWalletEventListeners();
+        checkWalletStatus();
+        initializeEventListeners();
+    } catch (err) {
+        globalThis.console.error('初始化失败:', err);
+    }
+});
+
+// 添加钱包事件监听
+function setupWalletEventListeners() {
+    if (globalThis.window.solana) {
+        // 连接事件
+        globalThis.window.solana.on('connect', () => {
+            if (globalThis.window.solana.publicKey) {
+                walletState.address = globalThis.window.solana.publicKey.toString();
+                walletState.connected = true;
+                updateWalletUI();
+            }
+        });
+
+        // 断开连接事件
+        globalThis.window.solana.on('disconnect', () => {
+            walletState.connected = false;
+            walletState.address = '';
+            updateWalletUI();
+        });
+
+        // 账户变更事件
+        globalThis.window.solana.on('accountChanged', () => {
+            checkWalletStatus();
+        });
+    }
+}
+
+// 页面加载时初始化
+globalThis.window.addEventListener('load', () => {
+    setupWalletEventListeners();
+    checkWalletStatus();
 });
