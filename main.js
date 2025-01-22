@@ -9,6 +9,12 @@ const config = {
 // 存储推荐人投资数据的对象
 let referralData = {};
 
+// 存储募集数据
+let raisedData = {
+    totalAmount: 0,
+    transactions: []
+};
+
 // 检查是否是移动端钱包浏览器
 function isMobileWallet() {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -105,7 +111,7 @@ async function contribute() {
             return;
         }
 
-        const solAmount = document.getElementById('solAmount').value;
+        const solAmount = parseFloat(document.getElementById('solAmount').value);
         if (!solAmount || solAmount < 0.1) {
             alert('请输入有效的 SOL 数量（最小 0.1 SOL）');
             return;
@@ -136,36 +142,75 @@ async function contribute() {
         transaction.add(
             solanaWeb3.SystemProgram.transfer({
                 fromPubkey: new solanaWeb3.PublicKey(wallet.publicKey.toString()),
-                toPubkey: new solanaWeb3.PublicKey('BcXV94bgVxk49Fj5NPBwbN1D9ffxMmm6P7JHnfBsdTJ9'),
-                lamports: Math.floor(solAmount * solanaWeb3.LAMPORTS_PER_SOL)
+                toPubkey: new solanaWeb3.PublicKey(config.PRESALE_WALLET),
+                lamports: solAmount * solanaWeb3.LAMPORTS_PER_SOL
             })
         );
 
-        // 获取最新区块哈希
-        const { blockhash } = await connection.getLatestBlockhash();
-        transaction.recentBlockhash = blockhash;
-        transaction.feePayer = new solanaWeb3.PublicKey(wallet.publicKey.toString());
-
         // 发送交易
-        const { signature } = await wallet.signAndSendTransaction(transaction);
-        console.log('交易已发送，等待确认...');
+        const signature = await wallet.signAndSendTransaction(transaction);
         
-        await connection.confirmTransaction(signature);
-        console.log('投资成功！交易签名:', signature);
-        alert('投资成功！');
+        // 等待交易确认
+        const confirmation = await connection.confirmTransaction(signature.signature);
         
-        // 重置输入
-        document.getElementById('solAmount').value = '';
-        updateDsnkAmount();
-        
-        // 更新推荐人投资数量
-        const referrer = new URLSearchParams(window.location.search).get('ref');
-        if (referrer) {
-            await updateReferralAmount(referrer, solAmount);
+        if (confirmation.value.err === null) {
+            // 交易成功，更新募集金额
+            await addSuccessfulTransaction(solAmount, signature.signature);
+            alert('投资成功！');
+            
+            // 更新推荐人投资数量
+            const referrer = localStorage.getItem('referrer');
+            if (referrer) {
+                updateReferralAmount(referrer, solAmount);
+            }
+        } else {
+            alert('交易失败，请重试');
         }
     } catch (err) {
         console.error('投资失败:', err);
         alert('投资失败: ' + err.message);
+    }
+}
+
+// 从服务器获取募集金额
+async function fetchRaisedAmount() {
+    try {
+        const response = await fetch('http://localhost:3002/api/raised-amount');
+        const data = await response.json();
+        updateTotalRaisedDisplay(data.total);
+    } catch (err) {
+        console.error('获取募集金额失败:', err);
+    }
+}
+
+// 更新募集金额显示
+function updateTotalRaisedDisplay(amount) {
+    const totalRaisedElement = document.getElementById('totalRaised');
+    if (totalRaisedElement) {
+        totalRaisedElement.textContent = `${amount.toFixed(2)} SOL`;
+    }
+}
+
+// 添加新的成功交易
+async function addSuccessfulTransaction(amount, txId) {
+    try {
+        const response = await fetch('http://localhost:3002/api/raised-amount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                amount: amount,
+                txId: txId
+            })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            updateTotalRaisedDisplay(data.total);
+        }
+    } catch (err) {
+        console.error('更新募集金额失败:', err);
     }
 }
 
@@ -223,6 +268,12 @@ function updateCountdown() {
 // 初始化
 async function onload() {
     try {
+        // 获取募集金额
+        await fetchRaisedAmount();
+        
+        // 每60秒刷新一次募集金额
+        setInterval(fetchRaisedAmount, 60000);
+        
         // 检查钱包状态
         await checkWalletStatus();
         
@@ -231,7 +282,6 @@ async function onload() {
         const referrer = urlParams.get('ref');
         
         if (referrer) {
-            // 存储推荐人地址
             localStorage.setItem('referrer', referrer);
             console.log('推荐人地址:', referrer);
         }
