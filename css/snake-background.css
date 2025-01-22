@@ -203,36 +203,7 @@ body {
     animation: particleFade 1.5s ease-out forwards;
 }
 
-/* 蛇的样式 */
-.snake-segment {
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    border-radius: 4px;
-    background: linear-gradient(135deg, #00ff88 0%, #00cc6e 100%);
-    transition: all 0.1s ease;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.9;
-    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.snake-segment:nth-child(2n) {
-    background: linear-gradient(45deg, #00ff88 0%, #00cc6e 100%);
-}
-
-.snake-segment:nth-child(3n) {
-    background: linear-gradient(90deg, #00ff88 0%, #00cc6e 100%);
-}
-
-.snake-segment:nth-child(4n) {
-    background: linear-gradient(180deg, #00ff88 0%, #00cc6e 100%);
-}
-
-.snake-segment + .snake-segment {
-    margin-top: 1px;
-}
-
+/* 蛇头的样式 */
 .snake-head {
     position: absolute;
     width: 30px;
