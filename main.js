@@ -9,25 +9,53 @@ const config = {
 // 存储推荐人投资数据的对象
 let referralData = {};
 
+// 检查是否是移动端钱包浏览器
+function isMobileWallet() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    return userAgent.includes('tokenpocket') || 
+           userAgent.includes('okx') || 
+           userAgent.includes('metamask') ||
+           userAgent.includes('trustwallet');
+}
+
 // 检查钱包状态
 async function checkWalletStatus() {
     try {
-        if (window.phantom?.solana?.isConnected) {
+        // 如果是移动端钱包浏览器
+        if (isMobileWallet()) {
+            if (window.solana) {
+                const account = await window.solana.connect();
+                handleWalletConnection(account.publicKey.toString());
+                return;
+            }
+            // 如果是TP钱包
+            if (window.sollet) {
+                const account = await window.sollet.connect();
+                handleWalletConnection(account.publicKey.toString());
+                return;
+            }
+        } 
+        // PC端Phantom钱包
+        else if (window.phantom?.solana?.isConnected) {
             const publicKey = window.phantom.solana.publicKey;
             if (publicKey) {
-                const address = publicKey.toString();
-                const connectWalletBtn = document.getElementById('connectWallet');
-                const contributeForm = document.getElementById('contributeForm');
-                
-                if (connectWalletBtn && contributeForm) {
-                    connectWalletBtn.textContent = address.slice(0, 4) + '...' + address.slice(-4);
-                    connectWalletBtn.classList.add('connected');
-                    contributeForm.classList.remove('hidden');
-                }
+                handleWalletConnection(publicKey.toString());
             }
         }
     } catch (err) {
         console.error('检查钱包状态失败:', err);
+    }
+}
+
+// 处理钱包连接后的UI更新
+function handleWalletConnection(address) {
+    const connectWalletBtn = document.getElementById('connectWallet');
+    const contributeForm = document.getElementById('contributeForm');
+    
+    if (connectWalletBtn && contributeForm) {
+        connectWalletBtn.textContent = address.slice(0, 4) + '...' + address.slice(-4);
+        connectWalletBtn.classList.add('connected');
+        contributeForm.classList.remove('hidden');
     }
 }
 
@@ -36,27 +64,32 @@ async function connectWallet() {
     try {
         console.log('尝试连接钱包...');
         
-        // 检查是否安装了 Phantom 钱包
+        // 移动端钱包浏览器
+        if (isMobileWallet()) {
+            if (window.solana) {
+                const account = await window.solana.connect();
+                handleWalletConnection(account.publicKey.toString());
+                return;
+            }
+            if (window.sollet) {
+                const account = await window.sollet.connect();
+                handleWalletConnection(account.publicKey.toString());
+                return;
+            }
+            alert('请使用支持的钱包浏览器');
+            return;
+        }
+        
+        // PC端Phantom钱包
         if (!window.phantom?.solana?.isPhantom) {
             alert('请先安装 Phantom 钱包!');
             window.open('https://phantom.app/', '_blank');
             return;
         }
 
-        // 连接钱包
         const resp = await window.phantom.solana.connect();
-        console.log('钱包已连接:', resp.publicKey.toString());
+        handleWalletConnection(resp.publicKey.toString());
         
-        // 更新UI
-        const connectWalletBtn = document.getElementById('connectWallet');
-        const contributeForm = document.getElementById('contributeForm');
-        
-        if (connectWalletBtn && contributeForm) {
-            const address = resp.publicKey.toString();
-            connectWalletBtn.textContent = address.slice(0, 4) + '...' + address.slice(-4);
-            connectWalletBtn.classList.add('hidden');
-            contributeForm.classList.remove('hidden');
-        }
     } catch (err) {
         console.error('连接钱包失败:', err);
         alert('连接钱包失败: ' + err.message);
@@ -67,7 +100,7 @@ async function connectWallet() {
 async function contribute() {
     try {
         // 检查钱包
-        if (!window.phantom?.solana?.isPhantom) {
+        if (!window.phantom?.solana?.isPhantom && !isMobileWallet()) {
             alert('请先安装 Phantom 钱包!');
             return;
         }
@@ -81,7 +114,23 @@ async function contribute() {
         // 创建连接和交易
         const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
         const transaction = new solanaWeb3.Transaction();
-        const wallet = window.phantom.solana;
+        let wallet;
+        
+        // 移动端钱包浏览器
+        if (isMobileWallet()) {
+            if (window.solana) {
+                wallet = window.solana;
+            } else if (window.sollet) {
+                wallet = window.sollet;
+            } else {
+                alert('请使用支持的钱包浏览器');
+                return;
+            }
+        } 
+        // PC端Phantom钱包
+        else {
+            wallet = window.phantom.solana;
+        }
         
         // 添加转账指令
         transaction.add(
@@ -203,29 +252,56 @@ async function onload() {
 
 // 生成推荐链接
 async function generateReferralLink() {
-    if (!window.phantom?.solana?.isPhantom) {
+    if (!window.phantom?.solana?.isPhantom && !isMobileWallet()) {
         showCustomAlert('Please connect your wallet first', document.getElementById('generateReferralButton'));
         return;
     }
 
-    const walletAddress = await getCurrentWalletAddress();
+    let walletAddress;
+    if (isMobileWallet()) {
+        if (window.solana) {
+            walletAddress = await window.solana.connect();
+        } else if (window.sollet) {
+            walletAddress = await window.sollet.connect();
+        } else {
+            showCustomAlert('Please use a supported wallet browser', document.getElementById('generateReferralButton'));
+            return;
+        }
+    } else {
+        walletAddress = await getCurrentWalletAddress();
+    }
+    
     if (!walletAddress) {
         showCustomAlert('Failed to get wallet address', document.getElementById('generateReferralButton'));
         return;
     }
 
-    const baseUrl = window.location.origin + window.location.pathname;
-    const referralLink = `${baseUrl}?ref=${walletAddress}`;
-    
-    const referralLinkElement = document.getElementById('referralLink');
-    if (referralLinkElement) {
-        referralLinkElement.value = referralLink;
-        
-        // 显示推荐链接相关的投资总量
-        const referralAmountElement = document.getElementById('referralAmount');
-        if (referralAmountElement) {
-            const amount = referralData[walletAddress] || 0;
-            referralAmountElement.textContent = `Total SOL raised through your referral link: ${amount.toFixed(2)} SOL`;
+    try {
+        const referralLinkInput = document.getElementById('referralLink');
+        if (referralLinkInput) {
+            // 使用固定的域名而不是 localhost
+            const baseUrl = 'https://solgw.vercel.app';
+            referralLinkInput.value = `${baseUrl}/?ref=${walletAddress}`;
+            
+            // 自动选中文本框内容
+            referralLinkInput.select();
+        }
+    } catch (err) {
+        console.error('生成推荐链接失败:', err);
+        showCustomAlert('Failed to generate referral link', document.getElementById('generateReferralButton'));
+    }
+}
+
+// 复制推荐链接
+async function copyReferralLink() {
+    const referralLinkInput = document.getElementById('referralLink');
+    if (referralLinkInput) {
+        try {
+            await navigator.clipboard.writeText(referralLinkInput.value);
+            showCustomAlert('Link copied!', document.getElementById('copyButton'));
+        } catch (err) {
+            console.error('复制链接失败:', err);
+            showCustomAlert('Failed to copy link', document.getElementById('copyButton'));
         }
     }
 }
