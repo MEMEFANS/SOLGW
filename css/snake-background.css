@@ -218,46 +218,6 @@ body {
     transition: all 0.1s ease;
 }
 
-/* 食物（骨头）样式 */
-.food {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    z-index: 1;
-}
-
-.bone {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
-/* 骨头中间部分 */
-.bone::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 6px;
-    background: #fff;
-    top: 50%;
-    transform: translateY(-50%);
-    border-radius: 2px;
-}
-
-/* 骨头两端 */
-.bone::after {
-    content: '';
-    position: absolute;
-    width: 8px;
-    height: 12px;
-    background: #fff;
-    border-radius: 4px;
-    top: 50%;
-    transform: translateY(-50%);
-    box-shadow: 12px 0 0 #fff;
-    left: 0;
-}
-
 .wallet-dropdown {
     position: absolute;
     top: 100%;
