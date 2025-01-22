@@ -1,9 +1,10 @@
 // 检测是否是移动端钱包浏览器
 function isMobileWallet() {
     return (
-        (globalThis.window.solana && globalThis.window.solana.isPhantom) || 
-        globalThis.window.okxwallet ||
-        globalThis.window.tokenpocket ||
+        (globalThis.window?.solana && globalThis.window.solana.isPhantom) || 
+        globalThis.window?.solflare ||
+        globalThis.window?.okxwallet ||
+        (globalThis.window?.tokenpocket && globalThis.window.tokenpocket.solana) ||
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(globalThis.navigator.userAgent)
     );
 }
@@ -18,14 +19,31 @@ const walletState = {
 
 // 获取可用的钱包提供商
 function getWalletProvider() {
-    if (globalThis.window.solana?.isPhantom) {
+    console.log('检测可用钱包...');
+    console.log('Phantom:', !!globalThis.window?.solana?.isPhantom);
+    console.log('OKX:', !!globalThis.window?.okxwallet);
+    console.log('TokenPocket:', !!globalThis.window?.tokenpocket?.solana);
+    console.log('Solflare:', !!globalThis.window?.solflare);
+
+    if (globalThis.window?.solana?.isPhantom) {
         return { provider: globalThis.window.solana, name: 'Phantom' };
     }
-    if (globalThis.window.okxwallet) {
-        return { provider: globalThis.window.okxwallet, name: 'OKX' };
+    if (globalThis.window?.okxwallet) {
+        try {
+            if (!globalThis.window.okxwallet.solana) {
+                globalThis.window.okxwallet.solana = globalThis.window.okxwallet;
+            }
+            return { provider: globalThis.window.okxwallet.solana, name: 'OKX' };
+        } catch (err) {
+            console.error('OKX钱包初始化失败:', err);
+            return null;
+        }
     }
-    if (globalThis.window.tokenpocket) {
-        return { provider: globalThis.window.tokenpocket, name: 'TokenPocket' };
+    if (globalThis.window?.tokenpocket?.solana) {
+        return { provider: globalThis.window.tokenpocket.solana, name: 'TokenPocket' };
+    }
+    if (globalThis.window?.solflare) {
+        return { provider: globalThis.window.solflare, name: 'Solflare' };
     }
     return null;
 }
@@ -53,20 +71,56 @@ async function connectWallet() {
             return;
         }
 
-        // 连接钱包
-        const resp = await walletInfo.provider.connect();
-        const publicKey = resp.publicKey.toString();
-        
-        console.log(`${walletInfo.name}钱包已连接:`, publicKey);
-        
-        // 更新状态
+        console.log('正在连接钱包:', walletInfo.name);
+
+        // 根据不同钱包进行连接
+        let walletAddress;
+        if (walletInfo.name === 'OKX') {
+            try {
+                // OKX钱包特殊处理
+                if (!walletInfo.provider.isConnected) {
+                    await walletInfo.provider.connect();
+                }
+                const publicKey = walletInfo.provider.publicKey;
+                if (!publicKey) {
+                    throw new Error('获取钱包地址失败');
+                }
+                walletAddress = publicKey.toString();
+                console.log('OKX钱包连接成功:', walletAddress);
+            } catch (err) {
+                console.error('OKX钱包连接失败:', err);
+                showCustomAlert('连接OKX钱包失败: ' + err.message, null);
+                return;
+            }
+        } else if (walletInfo.name === 'TokenPocket') {
+            try {
+                const response = await walletInfo.provider.connect();
+                walletAddress = response.publicKey.toString();
+            } catch (err) {
+                console.error('TP钱包连接失败:', err);
+                showCustomAlert('连接TP钱包失败: ' + err.message, null);
+                return;
+            }
+        } else {
+            try {
+                const response = await walletInfo.provider.connect();
+                walletAddress = response.publicKey.toString();
+            } catch (err) {
+                console.error('钱包连接失败:', err);
+                showCustomAlert('连接钱包失败: ' + err.message, null);
+                return;
+            }
+        }
+
+        // 更新钱包状态
         walletState.connected = true;
-        walletState.address = publicKey;
+        walletState.address = walletAddress;
         walletState.provider = walletInfo.provider;
-        
+
         // 更新UI
-        await updateWalletUI();
-        
+        updateWalletUI();
+        console.log('钱包连接成功:', walletAddress);
+
         // 添加断开连接的监听器
         walletInfo.provider.on('disconnect', () => {
             disconnectWallet();
@@ -116,39 +170,43 @@ function getReferrer() {
     return (ref && ref.length === 44) ? ref : null;
 }
 
-function generateReferralLink() {
+async function generateReferralLink() {
     try {
-        if (!walletState.connected || !walletState.address) {
+        if (!walletState.connected) {
             showCustomAlert('请先连接钱包', null);
             return;
         }
+
+        const currentUrl = window.location.origin + window.location.pathname;
+        const referralLink = `${currentUrl}?ref=${walletState.address}`;
         
-        const baseUrl = globalThis.window.location.origin + globalThis.window.location.pathname;
-        const referralLink = `${baseUrl}?ref=${walletState.address}`;
-        
-        // 更新UI显示
-        const referralLinkElement = globalThis.document.getElementById('referralLink');
-        if (referralLinkElement) {
-            referralLinkElement.value = referralLink;
+        const referralInput = document.getElementById('referralLink');
+        if (referralInput) {
+            referralInput.value = referralLink;
+            showCustomAlert('推荐链接已生成', null);
         }
-        
-        return referralLink;
     } catch (err) {
-        globalThis.console.error('生成推荐链接失败:', err);
-        return '';
+        console.error('生成推荐链接失败:', err);
+        showCustomAlert('生成推荐链接失败', null);
     }
 }
 
 async function copyReferralLink() {
-    const referralLink = globalThis.document.getElementById('referralLink').value;
-    if (referralLink && referralLink !== '请先连接钱包') {
-        try {
-            await globalThis.navigator.clipboard.writeText(referralLink);
-            globalThis.alert('推荐链接已复制到剪贴板！');
-        } catch (err) {
-            globalThis.console.error('复制失败:', err);
-            globalThis.alert('复制失败，请手动复制');
-        }
+    const referralInput = document.getElementById('referralLink');
+    if (!referralInput || !referralInput.value) {
+        showCustomAlert('请先生成推荐链接', null);
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(referralInput.value);
+        showCustomAlert('推荐链接已复制到剪贴板', null);
+    } catch (err) {
+        console.error('复制推荐链接失败:', err);
+        // 回退方案
+        referralInput.select();
+        document.execCommand('copy');
+        showCustomAlert('推荐链接已复制到剪贴板', null);
     }
 }
 
@@ -446,28 +504,31 @@ globalThis.window.addEventListener('load', async () => {
 // 检查当前钱包状态
 async function checkWalletStatus() {
     try {
-        const provider = getWalletProvider();
-        
-        if (provider) {
-            // 如果是移动端钱包浏览器且已连接，自动设置钱包状态
-            if (isMobileWallet() && provider.provider.isConnected && provider.provider.publicKey) {
-                walletState.address = provider.provider.publicKey.toString();
-                walletState.connected = true;
-                walletState.provider = provider.provider;
-                updateWalletUI();
-                return;
-            }
-            
-            // 检查PC端钱包状态
-            if (provider.provider.isPhantom && provider.provider.isConnected && provider.provider.publicKey) {
-                walletState.address = provider.provider.publicKey.toString();
-                walletState.connected = true;
-                walletState.provider = provider.provider;
-                updateWalletUI();
-            }
+        const walletInfo = getWalletProvider();
+        if (!walletInfo) {
+            return;
+        }
+
+        let isConnected = false;
+        let publicKey = null;
+
+        if (walletInfo.name === 'OKX') {
+            isConnected = walletInfo.provider.isConnected;
+            publicKey = walletInfo.provider.publicKey;
+        } else {
+            isConnected = walletInfo.provider.isConnected;
+            publicKey = walletInfo.provider.publicKey;
+        }
+
+        if (isConnected && publicKey) {
+            walletState.connected = true;
+            walletState.address = publicKey.toString();
+            walletState.provider = walletInfo.provider;
+            await updateWalletUI();
+            console.log('钱包已连接:', walletState.address);
         }
     } catch (err) {
-        globalThis.console.error('检查钱包状态失败:', err);
+        console.error('检查钱包状态失败:', err);
     }
 }
 

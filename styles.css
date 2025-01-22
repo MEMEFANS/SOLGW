@@ -227,6 +227,59 @@ nav {
 }
 
 /* 推荐链接样式 */
+.referral-container {
+    background: rgba(20, 241, 149, 0.05);
+    border: 1px solid rgba(20, 241, 149, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(20, 241, 149, 0.1);
+}
+
+.referral-link {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(20, 241, 149, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    word-break: break-all;
+    font-size: 0.9rem;
+    color: #14F195;
+}
+
+.referral-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.referral-button {
+    flex: 1;
+    background: linear-gradient(90deg, #14F195 0%, #9945FF 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.referral-button:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+.referral-stats {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(20, 241, 149, 0.2);
+    text-align: center;
+    font-size: 0.9rem;
+    color: rgba(20, 241, 149, 0.8);
+}
+
 .referral-box {
     border: 1px solid rgba(20, 241, 149, 0.2);
     border-radius: 0.5rem;
@@ -312,7 +365,10 @@ nav {
     background-size: 200% 200%;
     animation: gradientBG 3s ease infinite;
     -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
 }
 
 @keyframes gradientBG {
@@ -347,5 +403,24 @@ nav {
     
     .countdown-number {
         font-size: 1.5rem;
+    }
+    
+    .referral-container {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+    
+    .referral-link {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+    
+    .referral-buttons {
+        flex-direction: column;
+    }
+    
+    .referral-button {
+        width: 100%;
+        padding: 0.875rem;
     }
 }
