@@ -64,12 +64,34 @@ async function connectWallet() {
     }
 
     try {
-        if (!globalThis.window.solana || !globalThis.window.solana.isPhantom) {
+        // 检测是否是移动端钱包浏览器
+        function isMobileWallet() {
+            return (
+                globalThis.window.solana && 
+                globalThis.window.solana.isPhantom && 
+                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(globalThis.navigator.userAgent)
+            );
+        }
+
+        // 检查是否有Solana对象
+        if (!globalThis.window.solana) {
             globalThis.alert('请安装 Phantom 钱包!');
             globalThis.window.open('https://phantom.app/', '_blank');
             return;
         }
 
+        // 如果是移动端钱包浏览器，直接获取当前连接状态
+        if (isMobileWallet() && globalThis.window.solana.isConnected) {
+            const publicKey = globalThis.window.solana.publicKey;
+            if (publicKey) {
+                walletState.address = publicKey.toString();
+                walletState.connected = true;
+                updateWalletUI();
+                return;
+            }
+        }
+
+        // PC端或未连接的移动端，尝试连接钱包
         const resp = await globalThis.window.solana.connect();
         walletState.address = resp.publicKey.toString();
         walletState.connected = true;
@@ -373,6 +395,32 @@ globalThis.window.addEventListener('load', async () => {
     }
 });
 
+// 检查当前钱包状态
+async function checkWalletStatus() {
+    try {
+        const provider = globalThis.window.solana;
+        
+        if (provider) {
+            // 如果是移动端钱包浏览器且已连接，自动设置钱包状态
+            if (isMobileWallet() && provider.isConnected && provider.publicKey) {
+                walletState.address = provider.publicKey.toString();
+                walletState.connected = true;
+                updateWalletUI();
+                return;
+            }
+            
+            // 检查PC端钱包状态
+            if (provider.isPhantom && provider.isConnected) {
+                walletState.address = provider.publicKey.toString();
+                walletState.connected = true;
+                updateWalletUI();
+            }
+        }
+    } catch (err) {
+        globalThis.console.error('检查钱包状态失败:', err);
+    }
+}
+
 // 监听钱包断开连接
 globalThis.window?.solana?.on('disconnect', () => {
     walletState.connected = false;
@@ -432,20 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 检查当前钱包状态
-    const checkWalletStatus = async () => {
-        try {
-            const wallet = await window.solana?.connect({ onlyIfTrusted: true });
-            if (wallet) {
-                mobileConnectWallet.classList.add('hidden');
-                mobileWalletInfo.classList.remove('hidden');
-                mobileWalletAddress.textContent = `${wallet.publicKey.toString().slice(0, 4)}...${wallet.publicKey.toString().slice(-4)}`;
-            }
-        } catch (error) {
-            console.log('No trusted wallet connection');
-        }
-    };
-
-    // 页面加载时检查钱包状态
     checkWalletStatus();
 });
 
