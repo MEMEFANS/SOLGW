@@ -1,8 +1,6 @@
 :root {
     --game-bg: #090420;
     --grid-color: rgba(123, 31, 162, 0.15);
-    --snake-color: #00ff88;
-    --food-color: #ff3d00;
     --border-color: #7b1fa2;
     --score-color: #e040fb;
     --accent-color: #ff3d00;
@@ -204,35 +202,6 @@ body {
 }
 
 /* 蛇的样式 */
-.snake-segment {
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    border-radius: 4px;
-    background: linear-gradient(135deg, #00ff88 0%, #00cc6e 100%);
-    transition: all 0.1s ease;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.9;
-    box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.snake-segment:nth-child(2n) {
-    background: linear-gradient(45deg, #00ff88 0%, #00cc6e 100%);
-}
-
-.snake-segment:nth-child(3n) {
-    background: linear-gradient(90deg, #00ff88 0%, #00cc6e 100%);
-}
-
-.snake-segment:nth-child(4n) {
-    background: linear-gradient(180deg, #00ff88 0%, #00cc6e 100%);
-}
-
-.snake-segment + .snake-segment {
-    margin-top: 1px;
-}
-
 .snake-head {
     position: absolute;
     width: 30px;
