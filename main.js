@@ -9,6 +9,28 @@ const config = {
 // 存储推荐人投资数据的对象
 let referralData = {};
 
+// 检查钱包状态
+async function checkWalletStatus() {
+    try {
+        if (window.phantom?.solana?.isConnected) {
+            const publicKey = window.phantom.solana.publicKey;
+            if (publicKey) {
+                const address = publicKey.toString();
+                const connectWalletBtn = document.getElementById('connectWallet');
+                const contributeForm = document.getElementById('contributeForm');
+                
+                if (connectWalletBtn && contributeForm) {
+                    connectWalletBtn.textContent = address.slice(0, 4) + '...' + address.slice(-4);
+                    connectWalletBtn.classList.add('connected');
+                    contributeForm.classList.remove('hidden');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('检查钱包状态失败:', err);
+    }
+}
+
 // 连接钱包
 async function connectWallet() {
     try {
@@ -150,32 +172,34 @@ function updateCountdown() {
 }
 
 // 初始化
-window.onload = () => {
-    console.log('页面加载完成，开始初始化...');
-
-    // 初始化倒计时
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-
-    // 添加输入事件监听器
-    const solAmountInput = document.getElementById('solAmount');
-    if (solAmountInput) {
-        solAmountInput.addEventListener('input', updateDsnkAmount);
+async function onload() {
+    try {
+        // 检查钱包状态
+        await checkWalletStatus();
+        
+        // 获取URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const referrer = urlParams.get('ref');
+        
+        if (referrer) {
+            // 存储推荐人地址
+            localStorage.setItem('referrer', referrer);
+            console.log('推荐人地址:', referrer);
+        }
+        
+        // 生成推荐链接
+        generateReferralLink();
+        
+        // 更新倒计时
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        // 初始化蛇形背景
+        new SnakeBackground();
+    } catch (err) {
+        console.error('初始化失败:', err);
     }
-
-    // 添加事件监听器
-    const connectWalletBtn = document.getElementById('connectWallet');
-    if (connectWalletBtn) {
-        connectWalletBtn.onclick = connectWallet;
-    }
-
-    const contributeBtn = document.getElementById('contributeButton');
-    if (contributeBtn) {
-        contributeBtn.onclick = contribute;
-    }
-
-    console.log('初始化完成');
-};
+}
 
 // 生成推荐链接
 async function generateReferralLink() {
@@ -205,3 +229,5 @@ async function generateReferralLink() {
         }
     }
 }
+
+window.onload = onload;
