@@ -1,8 +1,9 @@
 // 检测是否是移动端钱包浏览器
 function isMobileWallet() {
     return (
-        globalThis.window.solana && 
-        globalThis.window.solana.isPhantom && 
+        (globalThis.window.solana && globalThis.window.solana.isPhantom) || 
+        globalThis.window.okxwallet ||
+        globalThis.window.tokenpocket ||
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(globalThis.navigator.userAgent)
     );
 }
@@ -11,8 +12,77 @@ function isMobileWallet() {
 const walletState = {
     connected: false,
     address: '',
-    balance: 0
+    balance: 0,
+    provider: null
 };
+
+// 获取可用的钱包提供商
+function getWalletProvider() {
+    if (globalThis.window.solana?.isPhantom) {
+        return { provider: globalThis.window.solana, name: 'Phantom' };
+    }
+    if (globalThis.window.okxwallet) {
+        return { provider: globalThis.window.okxwallet, name: 'OKX' };
+    }
+    if (globalThis.window.tokenpocket) {
+        return { provider: globalThis.window.tokenpocket, name: 'TokenPocket' };
+    }
+    return null;
+}
+
+// 钱包连接功能
+async function connectWallet() {
+    try {
+        const walletInfo = getWalletProvider();
+        
+        // 检查是否有可用的钱包
+        if (!walletInfo) {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(globalThis.navigator.userAgent);
+            if (isMobile) {
+                showCustomAlert('请使用 Phantom、OKX 或 TP 钱包浏览器打开此页面', null);
+            } else {
+                showCustomAlert('请安装 Phantom、OKX 或 TP 钱包!', null);
+                globalThis.window.open('https://phantom.app/', '_blank');
+            }
+            return;
+        }
+
+        // 如果已经连接，切换钱包信息显示
+        if (walletState.connected) {
+            toggleWalletInfo();
+            return;
+        }
+
+        // 连接钱包
+        const resp = await walletInfo.provider.connect();
+        const publicKey = resp.publicKey.toString();
+        
+        console.log(`${walletInfo.name}钱包已连接:`, publicKey);
+        
+        // 更新状态
+        walletState.connected = true;
+        walletState.address = publicKey;
+        walletState.provider = walletInfo.provider;
+        
+        // 更新UI
+        await updateWalletUI();
+        
+        // 添加断开连接的监听器
+        walletInfo.provider.on('disconnect', () => {
+            disconnectWallet();
+            hideWalletInfo();
+        });
+        
+        // 检查推荐人
+        const referrer = getReferrer();
+        if (referrer) {
+            updateReferralDisplay(referrer);
+        }
+    } catch (err) {
+        console.error('连接钱包失败:', err);
+        showCustomAlert('连接钱包失败: ' + err.message, null);
+    }
+}
 
 // 倒计时功能
 function updateCountdown() {
@@ -82,59 +152,15 @@ async function copyReferralLink() {
     }
 }
 
-// 钱包连接功能
-async function connectWallet() {
-    try {
-        // 检查是否有Solana对象
-        if (!globalThis.window.solana) {
-            if (isMobileWallet()) {
-                showCustomAlert('请在Phantom钱包App内打开此页面', null);
-                return;
-            } else {
-                showCustomAlert('请安装 Phantom 钱包!', null);
-                globalThis.window.open('https://phantom.app/', '_blank');
-                return;
-            }
-        }
-
-        // 如果已经连接，切换钱包信息显示
-        if (walletState.connected) {
-            toggleWalletInfo();
-            return;
-        }
-
-        // 如果是移动端钱包浏览器，直接获取当前连接状态
-        if (isMobileWallet() && globalThis.window.solana.isConnected) {
-            const publicKey = globalThis.window.solana.publicKey;
-            if (publicKey) {
-                walletState.address = publicKey.toString();
-                walletState.connected = true;
-                updateWalletUI();
-                showCustomAlert('钱包已连接', null);
-                return;
-            }
-        }
-
-        // PC端或未连接的移动端，尝试连接钱包
-        const resp = await globalThis.window.solana.connect();
-        walletState.address = resp.publicKey.toString();
-        walletState.connected = true;
-        updateWalletUI();
-        showCustomAlert('钱包连接成功！', null);
-    } catch (err) {
-        globalThis.console.error('连接钱包失败:', err);
-        showCustomAlert('连接钱包失败: ' + err.message, null);
-    }
-}
-
-// 断开钱包连接
+// 钱包断开连接
 async function disconnectWallet() {
     try {
-        if (globalThis.window.solana) {
-            await globalThis.window.solana.disconnect();
+        if (walletState.provider) {
+            await walletState.provider.disconnect();
         }
         walletState.connected = false;
         walletState.address = '';
+        walletState.provider = null;
         updateWalletUI();
         hideWalletInfo();
     } catch (err) {
@@ -171,141 +197,111 @@ function hideWalletInfo() {
 
 // 投资功能
 async function contribute() {
-    if (!walletState.connected) {
-        globalThis.alert('请先连接钱包');
-        return;
-    }
-
-    const investAmount = globalThis.document.getElementById('investAmount');
-    const amount = parseFloat(investAmount.value);
-    if (isNaN(amount) || amount < config.MIN_INVESTMENT) {
-        globalThis.alert(`请输入有效的投资金额（最小 ${config.MIN_INVESTMENT} SOL）`);
-        return;
-    }
-
     try {
-        const provider = globalThis.window.solana;
-        if (!provider) {
-            throw new Error('请先安装 Phantom 钱包');
+        const walletInfo = getWalletProvider();
+        
+        // 检查钱包
+        if (!walletInfo) {
+            showCustomAlert('请先安装支持的钱包!', null);
+            return;
         }
 
-        // 创建连接
-        const connection = new globalThis.window.solanaWeb3.Connection(
-            config.RPC_URL,
-            {
-                commitment: 'confirmed',
-                wsEndpoint: config.RPC_URL.replace('https://', 'wss://'),
-                confirmTransactionInitialTimeout: 120000
+        // 检查钱包是否已连接
+        if (!walletState.connected) {
+            await connectWallet();
+            if (!walletState.connected) {
+                showCustomAlert('请先连接钱包!', null);
+                return;
             }
+        }
+
+        const investAmount = document.getElementById('investAmount').value;
+        if (!investAmount || investAmount < 0.1) {
+            showCustomAlert('请输入有效的 SOL 数量（最小 0.1 SOL）', null);
+            return;
+        }
+
+        // 创建连接和交易
+        const connection = new solanaWeb3.Connection(
+            'https://black-lingering-fog.solana-mainnet.quiknode.pro/4d7783df09fe07db6ce511d870249fc3eb642683/',
+            'confirmed'
+        );
+        const transaction = new solanaWeb3.Transaction();
+        const wallet = walletInfo.provider;
+        
+        // 添加转账指令
+        transaction.add(
+            solanaWeb3.SystemProgram.transfer({
+                fromPubkey: new solanaWeb3.PublicKey(wallet.publicKey.toString()),
+                toPubkey: new solanaWeb3.PublicKey(config.PRESALE_WALLET),
+                lamports: Math.floor(investAmount * solanaWeb3.LAMPORTS_PER_SOL)
+            })
         );
 
-        // 测试连接并重试
-        let connected = false;
-        let retries = 3;
-        while (!connected && retries > 0) {
+        // 获取最新区块哈希（带重试逻辑）
+        let blockhash;
+        for (let i = 0; i < 3; i++) {
             try {
-                await connection.getVersion();
-                connected = true;
-            } catch (error) {
-                console.error(`RPC连接测试失败，剩余重试次数: ${retries}`, error);
-                retries--;
-                if (retries > 0) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                const response = await connection.getLatestBlockhash();
+                blockhash = response.blockhash;
+                break;
+            } catch (err) {
+                console.error(`获取区块哈希失败，尝试次数 ${i + 1}/3:`, err);
+                if (i === 2) {
+                    throw new Error('获取区块哈希失败，请稍后再试');
                 }
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒后重试
             }
         }
 
-        if (!connected) {
-            throw new Error('无法连接到Solana网络，请稍后再试');
-        }
-
-        // 获取推荐人地址
-        const referrer = getReferrer();
-        const transaction = new globalThis.window.solanaWeb3.Transaction();
-
-        // 创建主要转账指令
-        const mainInstruction = globalThis.window.solanaWeb3.SystemProgram.transfer({
-            fromPubkey: new globalThis.window.solanaWeb3.PublicKey(walletState.address),
-            toPubkey: new globalThis.window.solanaWeb3.PublicKey(config.PRESALE_WALLET),
-            lamports: Math.floor(amount * globalThis.window.solanaWeb3.LAMPORTS_PER_SOL)
-        });
-        
-        // 如果有推荐人,添加memo指令记录推荐人地址
-        if (referrer) {
-            const memoInstruction = new globalThis.window.solanaWeb3.TransactionInstruction({
-                keys: [],
-                programId: new globalThis.window.solanaWeb3.PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
-                data: globalThis.window.solanaWeb3.Buffer.from(referrer)
-            });
-            
-            transaction.add(mainInstruction, memoInstruction);
-        } else {
-            transaction.add(mainInstruction);
-        }
-
-        // 获取最新的区块哈希
-        let blockhash;
-        try {
-            const { blockhash: latestBlockhash } = await connection.getLatestBlockhash('finalized');
-            blockhash = latestBlockhash;
-            transaction.recentBlockhash = blockhash;
-            transaction.feePayer = new globalThis.window.solanaWeb3.PublicKey(walletState.address);
-        } catch (error) {
-            console.error('获取区块哈希失败:', error);
-            throw new Error('网络繁忙，请稍后再试');
-        }
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = new solanaWeb3.PublicKey(wallet.publicKey.toString());
 
         // 发送交易
         let signature;
         try {
-            const signed = await provider.signTransaction(transaction);
-            signature = await connection.sendRawTransaction(signed.serialize(), {
-                skipPreflight: false,
-                preflightCommitment: 'confirmed',
-                maxRetries: 3
-            });
-
-            // 显示处理中的提示
-            showCustomAlert('交易处理中...', document.getElementById('contributeButton'));
+            const signedTx = await wallet.signAndSendTransaction(transaction);
+            signature = signedTx.signature;
+            console.log('交易已发送，等待确认...');
             
-            // 等待交易确认
-            const latestBlockhash = await connection.getLatestBlockhash();
-            const confirmationStrategy = {
-                signature: signature,
-                blockhash: latestBlockhash.blockhash,
-                lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-            };
-            
-            try {
-                const confirmation = await connection.confirmTransaction(confirmationStrategy, 'confirmed');
-                
-                if (confirmation?.value?.err) {
-                    console.log('交易已发送但确认状态未知，交易签名:', signature);
-                    const message = referrer ? 
-                        `投资成功！通过推荐链接` :
-                        `投资成功！`;
-                    showCustomAlert(message, document.getElementById('contributeButton'));
-                } else {
-                    console.log('交易确认成功，交易签名:', signature);
-                    const message = referrer ? 
-                        `投资成功！通过推荐链接` :
-                        `投资成功！`;
-                    showCustomAlert(message, document.getElementById('contributeButton'));
+            // 等待交易确认（带重试逻辑）
+            for (let i = 0; i < 3; i++) {
+                try {
+                    await connection.confirmTransaction(signature);
+                    console.log('投资成功！交易签名:', signature);
+                    showCustomAlert('投资成功！', null);
+                    break;
+                } catch (err) {
+                    console.error(`确认交易失败，尝试次数 ${i + 1}/3:`, err);
+                    if (i === 2) {
+                        throw new Error('确认交易失败，但交易可能已经成功，请检查你的钱包');
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒后重试
                 }
-            } catch (err) {
-                console.log('交易已发送但确认超时，交易签名:', signature);
-                const message = referrer ? 
-                    `投资成功！通过推荐链接` :
-                    `投资成功！`;
-                showCustomAlert(message, document.getElementById('contributeButton'));
             }
-        } catch (error) {
-            console.error('交易失败:', error);
-            throw new Error('交易失败: ' + error.message);
+        } catch (err) {
+            console.error('投资失败:', err);
+            showCustomAlert('投资失败: ' + err.message, null);
+        }
+
+        // 更新已募集金额
+        const totalRaisedElement = document.getElementById('totalRaised');
+        if (totalRaisedElement) {
+            const currentAmount = parseFloat(totalRaisedElement.textContent);
+            totalRaisedElement.textContent = `${(currentAmount + parseFloat(investAmount)).toFixed(2)} SOL`;
+        }
+        
+        // 重置输入
+        document.getElementById('investAmount').value = '';
+        
+        // 更新推荐人投资数量
+        const referrer = getReferrer();
+        if (referrer) {
+            await updateReferralAmount(referrer, investAmount);
         }
     } catch (err) {
         console.error('投资失败:', err);
-        showCustomAlert('投资失败: ' + err.message, document.getElementById('contributeButton'));
+        showCustomAlert('投资失败: ' + err.message, null);
     }
 }
 
@@ -431,12 +427,13 @@ function showCustomAlert(message, buttonElement) {
 // 检查钱包连接状态
 globalThis.window.addEventListener('load', async () => {
     try {
-        const provider = globalThis.window.solana;
+        const provider = getWalletProvider();
         if (provider) {
-            if (provider.isPhantom) {
-                const resp = await provider.connect({ onlyIfTrusted: true });
+            if (provider.provider.isPhantom) {
+                const resp = await provider.provider.connect({ onlyIfTrusted: true });
                 walletState.address = resp.publicKey.toString();
                 walletState.connected = true;
+                walletState.provider = provider.provider;
                 updateWalletUI();
             }
         }
@@ -449,21 +446,23 @@ globalThis.window.addEventListener('load', async () => {
 // 检查当前钱包状态
 async function checkWalletStatus() {
     try {
-        const provider = globalThis.window.solana;
+        const provider = getWalletProvider();
         
         if (provider) {
             // 如果是移动端钱包浏览器且已连接，自动设置钱包状态
-            if (isMobileWallet() && provider.isConnected && provider.publicKey) {
-                walletState.address = provider.publicKey.toString();
+            if (isMobileWallet() && provider.provider.isConnected && provider.provider.publicKey) {
+                walletState.address = provider.provider.publicKey.toString();
                 walletState.connected = true;
+                walletState.provider = provider.provider;
                 updateWalletUI();
                 return;
             }
             
             // 检查PC端钱包状态
-            if (provider.isPhantom && provider.isConnected && provider.publicKey) {
-                walletState.address = provider.publicKey.toString();
+            if (provider.provider.isPhantom && provider.provider.isConnected && provider.provider.publicKey) {
+                walletState.address = provider.provider.publicKey.toString();
                 walletState.connected = true;
+                walletState.provider = provider.provider;
                 updateWalletUI();
             }
         }
@@ -476,6 +475,7 @@ async function checkWalletStatus() {
 globalThis.window?.solana?.on('disconnect', () => {
     walletState.connected = false;
     walletState.address = '';
+    walletState.provider = null;
     updateWalletUI();
 });
 
@@ -649,6 +649,7 @@ function setupWalletEventListeners() {
             if (globalThis.window.solana.publicKey) {
                 walletState.address = globalThis.window.solana.publicKey.toString();
                 walletState.connected = true;
+                walletState.provider = globalThis.window.solana;
                 updateWalletUI();
             }
         });
@@ -657,6 +658,7 @@ function setupWalletEventListeners() {
         globalThis.window.solana.on('disconnect', () => {
             walletState.connected = false;
             walletState.address = '';
+            walletState.provider = null;
             updateWalletUI();
         });
 
