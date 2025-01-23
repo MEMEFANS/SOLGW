@@ -7,7 +7,7 @@ const config = {
     PRESALE_END: '2024-02-20T16:00:00.000Z',
     
     // 接收捐赠的钱包地址
-    PRESALE_WALLET: '2VC2dJeKApFyesXxdr5WpkiHhRnvpWPFcREmYX1SejdJ',
+    PRESALE_WALLET: '4RNFQfHE2EdpLQRLWVMzTs8KUMxJi9bV21uzFJUktQQF',
     
     // 最小捐赠额
     MIN_INVESTMENT: 0.1,
