@@ -111,12 +111,11 @@ async function contribute() {
             return;
         }
 
-        // 创建连接和交易
+        // 创建连接
         const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
-        const transaction = new solanaWeb3.Transaction();
-        let wallet;
         
         // 移动端钱包浏览器
+        let wallet;
         if (isMobileWallet()) {
             if (window.solana) {
                 wallet = window.solana;
@@ -131,6 +130,18 @@ async function contribute() {
         else {
             wallet = window.phantom.solana;
         }
+
+        // 检查钱包余额
+        const balance = await connection.getBalance(new solanaWeb3.PublicKey(wallet.publicKey.toString()));
+        const solBalance = balance / solanaWeb3.LAMPORTS_PER_SOL;
+        
+        if (solBalance < solAmount) {
+            alert(`余额不足！你的余额为 ${solBalance.toFixed(4)} SOL`);
+            return;
+        }
+        
+        // 创建交易
+        const transaction = new solanaWeb3.Transaction();
         
         // 添加转账指令
         transaction.add(
