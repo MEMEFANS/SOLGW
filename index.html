@@ -145,14 +145,8 @@
     </style>
 </head>
 <body class="antialiased text-[#14F195]">
-    <div class="snake-background">
-        <div class="glow-overlay"></div>
-        <div class="game-grid"></div>
-        <div class="stars"></div>
-        <div class="light-effects"></div>
-    </div>
     <!-- 导航栏 -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-[#13091B]/80 backdrop-blur-xl border-b border-white/10">
+    <nav class="fixed top-0 left-0 right-0 z-[9999] bg-[#13091B]/80 backdrop-blur-xl border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -208,6 +202,42 @@
                     <div class="px-3 py-2">
                         <div id="mobileWalletContainer" class="relative">
                             <button id="mobileConnectWallet" class="hidden w-full connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-4 py-2 rounded-full hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
+                                <span class="text-lg font-medium">连接钱包</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="snake-background">
+        <div class="glow-overlay"></div>
+        <div class="game-grid"></div>
+        <div class="stars"></div>
+        <div class="light-effects"></div>
+    </div>
+
+                <!-- 移动端菜单按钮 -->
+                <div class="md:hidden flex items-center">
+                    <button id="menuButton" class="text-[#14F195] hover:text-[#64E9FF] bg-[#1D0F29]/50 p-2 rounded-lg backdrop-blur-sm border border-[#8364E8]/20">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 移动端菜单面板 -->
+            <div id="mobileMenu" class="hidden md:hidden fixed top-[60px] left-0 right-0 bg-[#13091B]/95 backdrop-blur-xl border-b border-[#8364E8]/30">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="#features" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">项目亮点</a>
+                    <a href="#tokenomics" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
+                    <a href="#roadmap" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">发展路线</a>
+                    <a href="#team" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">核心团队</a>
+                    <div class="px-3 py-2">
+                        <div id="mobileWalletContainer" class="relative">
+                            <button id="mobileConnectWallet" class="hidden w-full connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-4 py-2 rounded-full hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
                                 <span class="text-sm font-medium">连接钱包</span>
                             </button>
                             <div id="mobileWalletInfo" class="hidden w-full">
@@ -227,10 +257,10 @@
 
     <!-- 主要内容 -->
     <main class="container mx-auto px-4 pt-32 pb-8">
-        <!-- 倒计时和私募表单卡片 -->
+        <!-- 倒计时和捐赠表单卡片 -->
         <div class="card-container backdrop-blur-xl bg-[#13091B]/40 border border-white/10 rounded-2xl p-8 max-w-2xl mx-auto">
             <div class="countdown-section">
-                <h2 class="text-2xl font-bold text-[#8364E8] mb-6">距离私募结束还有</h2>
+                <h2 class="text-2xl font-bold text-[#8364E8] mb-6">距离捐赠结束还有</h2>
                 <div class="grid grid-cols-4 gap-4 text-center">
                     <div class="countdown-item">
                         <div id="days" class="text-4xl font-bold text-[#64E9FF]">07</div>
@@ -255,12 +285,12 @@
             <div class="divider-line my-8"></div>
 
             <div class="contribute-section">
-                <h2 class="text-2xl font-bold text-[#8364E8] mb-4">参与私募</h2>
+                <h2 class="text-2xl font-bold text-[#8364E8] mb-4">参与捐赠</h2>
                 
                 <!-- 私募信息 -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="info-card">
-                        <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">私募价格</h3>
+                        <h3 class="text-lg font-semibold mb-2 text-[#64E9FF]">捐赠价格</h3>
                         <p class="text-[#14F195]">1 SOL = 225,000 TDOGE</p>
                     </div>
                     <div class="info-card">
@@ -277,19 +307,11 @@
                     </div>
                 </div>
 
-                <!-- 已募集金额 -->
-                <div class="mb-6">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-[#9945FF]">已募集</span>
-                        <span id="totalRaised" class="text-sm text-[#14F195]">0 SOL</span>
-                    </div>
-                </div>
-
                 <!-- 投资表单 -->
                 <div class="invest-form space-y-4">
                     <div class="flex flex-col space-y-4">
                         <div class="flex justify-between items-center">
-                            <label class="text-[#9945FF]">投资金额 (SOL)</label>
+                            <label class="text-[#9945FF]">捐赠金额 (SOL)</label>
                             <span class="text-[#14F195]">将获得: <span id="tdogeAmount" class="font-bold">0 TDOGE</span></span>
                         </div>
                         <input type="number" 
@@ -302,7 +324,7 @@
                     
                     <button id="contributeButton" 
                             class="w-full py-3 bg-[#13091B] text-[#14F195] rounded-lg border border-[#8364E8] hover:bg-[#1D0F29] hover:border-[#14F195] transition-all duration-300 flex items-center justify-center space-x-2">
-                        <span class="text-lg font-medium">确认私募</span>
+                        <span class="text-lg font-medium">确认捐赠</span>
                     </button>
                 </div>
 
@@ -318,7 +340,7 @@
                             复制链接
                         </button>
                     </div>
-                    <p id="referralAmount" class="text-[#9945FF] mt-2">通过你的推荐链接募集的SOL: <span class="text-[#14F195]">0.00 SOL</span></p>
+                    <p id="referralAmount" class="text-[#9945FF] mt-2">通过你的推荐链接捐赠的SOL: <span class="text-[#14F195]">0.00 SOL</span></p>
                 </div>
             </div>
         </div>
@@ -388,14 +410,14 @@
 
             <!-- 私募详情 -->
             <div class="glass-card hover-glow p-6">
-                <h3 class="text-xl font-bold mb-4 text-[#14F195]">私募详情</h3>
+                <h3 class="text-xl font-bold mb-4 text-[#14F195]">捐赠详情</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <p class="text-[#9945FF] mb-2">私募价格</p>
+                        <p class="text-[#9945FF] mb-2">捐赠价格</p>
                         <p class="text-xl font-bold text-[#9945FF]">1 SOL = 225,000 TDOGE</p>
                     </div>
                     <div>
-                        <p class="text-[#9945FF] mb-2">私募目标</p>
+                        <p class="text-[#9945FF] mb-2">捐赠目标</p>
                         <p class="text-xl font-bold text-[#9945FF]">2,000 SOL</p>
                     </div>
                 </div>
@@ -411,7 +433,7 @@
                 <div class="glass-card hover-glow p-6">
                     <h3 class="text-xl font-bold mb-4 text-[#14F195]">第一阶段：启动</h3>
                     <ul class="list-disc list-inside text-[#9945FF] space-y-2">
-                        <li>完成私募</li>
+                        <li>完成捐赠</li>
                         <li>上线DEX交易所</li>
                         <li>启动特朗普基金会合作</li>
                         <li>开始全球社区建设</li>
@@ -509,7 +531,7 @@
                     <p class="card-content text-[#9945FF]">
                         <span class="highlight-text">1. 特朗普基金会官方支持</span>，极高信任度<br>
                         <span class="highlight-text">2. 总统政策支持</span>，发展前景广阔<br>
-                        <span class="highlight-text">3. 私募价格优惠</span>，升值空间巨大<br>
+                        <span class="highlight-text">3. 捐赠价格优惠</span>，升值空间巨大<br>
                         <span class="highlight-text">4. 全球最大政治MEME社区支持</span>
                     </p>
                 </div>

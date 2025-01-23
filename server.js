@@ -2,30 +2,6 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-// 存储募集数据
-let raisedAmount = {
-    total: 0,
-    transactions: []
-};
-
-// 从文件加载募集数据
-try {
-    const data = fs.readFileSync(path.join(__dirname, 'raised_data.json'));
-    raisedAmount = JSON.parse(data);
-} catch (err) {
-    // 如果文件不存在，使用默认值
-    console.log('No existing raised data found');
-}
-
-// 保存募集数据到文件
-function saveRaisedData() {
-    fs.writeFileSync(
-        path.join(__dirname, 'raised_data.json'),
-        JSON.stringify(raisedAmount),
-        'utf8'
-    );
-}
-
 const server = http.createServer((req, res) => {
     // 设置CORS头
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,40 +24,6 @@ const server = http.createServer((req, res) => {
             }
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(content);
-        });
-    }
-    // 获取募集金额
-    else if (req.url === '/api/raised-amount' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ total: raisedAmount.total }));
-    }
-    // 更新募集金额
-    else if (req.url === '/api/raised-amount' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-        req.on('end', () => {
-            try {
-                const data = JSON.parse(body);
-                if (typeof data.amount === 'number' && data.txId) {
-                    raisedAmount.transactions.push({
-                        amount: data.amount,
-                        txId: data.txId,
-                        timestamp: Date.now()
-                    });
-                    raisedAmount.total += data.amount;
-                    saveRaisedData();
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: true, total: raisedAmount.total }));
-                } else {
-                    res.writeHead(400);
-                    res.end(JSON.stringify({ error: 'Invalid data format' }));
-                }
-            } catch (err) {
-                res.writeHead(400);
-                res.end(JSON.stringify({ error: 'Invalid JSON' }));
-            }
         });
     }
     // 处理静态文件
@@ -107,12 +49,29 @@ const server = http.createServer((req, res) => {
             res.end(content);
         });
     }
-    else {
+    else if (req.url === '/api/referral' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            try {
+                const data = JSON.parse(body);
+                // 处理推荐链接逻辑
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            } catch (err) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Invalid data format' }));
+            }
+        });
+    } else {
         res.writeHead(404);
-        res.end('Not found');
+        res.end('Not Found');
     }
 });
 
-server.listen(3002, 'localhost', () => {
-    console.log('Server running at http://localhost:3002/');
+const PORT = 3002;
+server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}/`);
 });

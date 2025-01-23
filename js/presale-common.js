@@ -253,7 +253,7 @@ function hideWalletInfo() {
     }
 }
 
-// 投资功能
+// 捐赠功能
 async function contribute() {
     try {
         const walletInfo = getWalletProvider();
@@ -274,7 +274,7 @@ async function contribute() {
         }
 
         const investAmount = document.getElementById('investAmount').value;
-        if (!investAmount || investAmount < 0.1) {
+        if (!investAmount || parseFloat(investAmount) < 0.1) {
             showCustomAlert('请输入有效的 SOL 数量（最小 0.1 SOL）', null);
             return;
         }
@@ -292,7 +292,7 @@ async function contribute() {
             solanaWeb3.SystemProgram.transfer({
                 fromPubkey: new solanaWeb3.PublicKey(wallet.publicKey.toString()),
                 toPubkey: new solanaWeb3.PublicKey(config.PRESALE_WALLET),
-                lamports: Math.floor(investAmount * solanaWeb3.LAMPORTS_PER_SOL)
+                lamports: Math.floor(parseFloat(investAmount) * solanaWeb3.LAMPORTS_PER_SOL)
             })
         );
 
@@ -326,8 +326,8 @@ async function contribute() {
             for (let i = 0; i < 3; i++) {
                 try {
                     await connection.confirmTransaction(signature);
-                    console.log('投资成功！交易签名:', signature);
-                    showCustomAlert('投资成功！', null);
+                    console.log('捐赠成功！交易签名:', signature);
+                    showCustomAlert('捐赠成功！', null);
                     break;
                 } catch (err) {
                     console.error(`确认交易失败，尝试次数 ${i + 1}/3:`, err);
@@ -338,33 +338,27 @@ async function contribute() {
                 }
             }
         } catch (err) {
-            console.error('投资失败:', err);
-            showCustomAlert('投资失败: ' + err.message, null);
+            console.error('捐赠失败:', err);
+            showCustomAlert('捐赠失败: ' + err.message, null);
         }
 
-        // 更新已募集金额
-        const totalRaisedElement = document.getElementById('totalRaised');
-        if (totalRaisedElement) {
-            const currentAmount = parseFloat(totalRaisedElement.textContent);
-            totalRaisedElement.textContent = `${(currentAmount + parseFloat(investAmount)).toFixed(2)} SOL`;
-        }
-        
         // 重置输入
         document.getElementById('investAmount').value = '';
         
-        // 更新推荐人投资数量
+        // 更新推荐人捐赠数量
         const referrer = getReferrer();
         if (referrer) {
             await updateReferralAmount(referrer, investAmount);
         }
     } catch (err) {
-        console.error('投资失败:', err);
-        showCustomAlert('投资失败: ' + err.message, null);
+        console.error('捐赠失败:', err);
+        showCustomAlert('捐赠失败: ' + err.message, null);
     }
 }
 
 // 计算代币数量
 function calculateTokens(solAmount) {
+    if (!solAmount) return 0;
     return solAmount * config.TDOGE_PER_SOL;
 }
 
@@ -408,7 +402,7 @@ async function updateWalletUI() {
                 }
             }
 
-            // 启用投资功能
+            // 启用捐赠功能
             if (investAmount) {
                 investAmount.disabled = false;
                 investAmount.placeholder = '最低 0.1 SOL';
@@ -435,7 +429,7 @@ async function updateWalletUI() {
                 walletInfo.classList.add('hidden');
             }
 
-            // 禁用投资功能
+            // 禁用捐赠功能
             if (investAmount) {
                 investAmount.disabled = true;
                 investAmount.placeholder = '请先连接钱包';
@@ -595,7 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkWalletStatus();
 });
 
-// 查询推荐人的私募记录
+// 查询推荐人的捐赠记录
 async function getReferralAmount(referrerAddress) {
     try {
         const connection = new globalThis.window.solanaWeb3.Connection(config.RPC_URL);
@@ -644,7 +638,7 @@ async function updateReferralDisplay(referrerAddress) {
     const amount = await getReferralAmount(referrerAddress);
     const referralAmountElement = document.getElementById('referralAmount');
     if (referralAmountElement) {
-        referralAmountElement.textContent = `通过你的推荐链接募集的SOL: ${amount.toFixed(2)} SOL`;
+        referralAmountElement.textContent = `通过你的推荐链接捐赠的SOL: ${amount.toFixed(2)} SOL`;
     }
 }
 

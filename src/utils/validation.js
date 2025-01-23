@@ -1,27 +1,28 @@
 import { PublicKey } from '@solana/web3.js'
 
-export const validateInvestment = async (connection, wallet, amount) => {
+export const validateInvestment = async (connection, wallet, amount, config) => {
   try {
     // 检查钱包是否连接
     if (!wallet.connected || !wallet.publicKey) {
       throw new Error('请先连接钱包')
     }
 
-    // 检查投资金额是否合法
-    if (!amount || amount <= 0) {
-      throw new Error('请输入有效的投资金额')
+    // 检查捐赠金额是否合法
+    if (!amount || isNaN(amount) || amount <= 0) {
+      throw new Error('请输入有效的捐赠金额')
     }
 
-    // 获取最小和最大投资限额
-    const minInvestment = 0.1 // SOL
-    const maxInvestment = 1000 // SOL
-    
+    // 获取最小和最大捐赠限额
+    const minInvestment = config.MIN_INVESTMENT
+    const maxInvestment = config.MAX_INVESTMENT
+
+    // 验证金额范围
     if (amount < minInvestment) {
-      throw new Error(`投资金额不能小于 ${minInvestment} SOL`)
+      throw new Error(`捐赠金额不能小于 ${minInvestment} SOL`)
     }
-    
-    if (amount > maxInvestment) {
-      throw new Error(`投资金额不能大于 ${maxInvestment} SOL`)
+
+    if (maxInvestment && amount > maxInvestment) {
+      throw new Error(`捐赠金额不能大于 ${maxInvestment} SOL`)
     }
 
     // 检查钱包余额

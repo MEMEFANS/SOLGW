@@ -1,19 +1,13 @@
 // 配置
 const config = {
     DSNK_PER_SOL: 10000,
-    PRESALE_WALLET: 'BcXV94bgVxk49Fj5NPBwbN1D9ffxMmm6P7JHnfBsdTJ9',
+    PRESALE_WALLET: '2VC2dJeKApFyesXxdr5WpkiHhRnvpWPFcREmYX1SejdJ',
     PRESALE_END: '2024-02-01T00:00:00',
     MIN_INVESTMENT: 0.1
 };
 
-// 存储推荐人投资数据的对象
+// 存储推荐人捐赠数据的对象
 let referralData = {};
-
-// 存储募集数据
-let raisedData = {
-    totalAmount: 0,
-    transactions: []
-};
 
 // 检查是否是移动端钱包浏览器
 function isMobileWallet() {
@@ -102,7 +96,7 @@ async function connectWallet() {
     }
 }
 
-// 投资
+// 捐赠
 async function contribute() {
     try {
         // 检查钱包
@@ -154,67 +148,22 @@ async function contribute() {
         const confirmation = await connection.confirmTransaction(signature.signature);
         
         if (confirmation.value.err === null) {
-            // 交易成功，更新募集金额
-            await addSuccessfulTransaction(solAmount, signature.signature);
-            alert('投资成功！');
-            
-            // 更新推荐人投资数量
+            // 交易成功，更新推荐人捐赠数量
             const referrer = localStorage.getItem('referrer');
             if (referrer) {
                 updateReferralAmount(referrer, solAmount);
             }
+            alert('捐赠成功！');
         } else {
             alert('交易失败，请重试');
         }
     } catch (err) {
-        console.error('投资失败:', err);
-        alert('投资失败: ' + err.message);
+        console.error('捐赠失败:', err);
+        alert('捐赠失败: ' + err.message);
     }
 }
 
-// 从服务器获取募集金额
-async function fetchRaisedAmount() {
-    try {
-        const response = await fetch('http://localhost:3002/api/raised-amount');
-        const data = await response.json();
-        updateTotalRaisedDisplay(data.total);
-    } catch (err) {
-        console.error('获取募集金额失败:', err);
-    }
-}
-
-// 更新募集金额显示
-function updateTotalRaisedDisplay(amount) {
-    const totalRaisedElement = document.getElementById('totalRaised');
-    if (totalRaisedElement) {
-        totalRaisedElement.textContent = `${amount.toFixed(2)} SOL`;
-    }
-}
-
-// 添加新的成功交易
-async function addSuccessfulTransaction(amount, txId) {
-    try {
-        const response = await fetch('http://localhost:3002/api/raised-amount', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: amount,
-                txId: txId
-            })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            updateTotalRaisedDisplay(data.total);
-        }
-    } catch (err) {
-        console.error('更新募集金额失败:', err);
-    }
-}
-
-// 更新推荐人投资数量
+// 更新推荐人捐赠数量
 async function updateReferralAmount(referrer, amount) {
     if (!referralData[referrer]) {
         referralData[referrer] = 0;
@@ -266,39 +215,20 @@ function updateCountdown() {
 }
 
 // 初始化
-async function onload() {
-    try {
-        // 获取募集金额
-        await fetchRaisedAmount();
-        
-        // 每60秒刷新一次募集金额
-        setInterval(fetchRaisedAmount, 60000);
-        
-        // 检查钱包状态
-        await checkWalletStatus();
-        
-        // 获取URL参数
-        const urlParams = new URLSearchParams(window.location.search);
-        const referrer = urlParams.get('ref');
-        
-        if (referrer) {
-            localStorage.setItem('referrer', referrer);
-            console.log('推荐人地址:', referrer);
-        }
-        
-        // 生成推荐链接
-        generateReferralLink();
-        
-        // 更新倒计时
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-        
-        // 初始化蛇形背景
-        new SnakeBackground();
-    } catch (err) {
-        console.error('初始化失败:', err);
+document.addEventListener('DOMContentLoaded', async function() {
+    // 检查URL中的推荐人
+    const urlParams = new URLSearchParams(window.location.search);
+    const referrer = urlParams.get('ref');
+    if (referrer) {
+        localStorage.setItem('referrer', referrer);
     }
-}
+
+    // 初始化钱包
+    await initializeWallet();
+    
+    // 设置定时刷新
+    setInterval(updateCountdown, 1000);
+});
 
 // 生成推荐链接
 async function generateReferralLink() {
@@ -355,5 +285,3 @@ async function copyReferralLink() {
         }
     }
 }
-
-window.onload = onload;
