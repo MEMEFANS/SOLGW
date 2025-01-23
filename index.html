@@ -148,39 +148,38 @@
     <!-- 导航栏 -->
     <nav class="fixed top-0 left-0 right-0 z-[9999] bg-[#13091B]/80 backdrop-blur-xl border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
                 <div class="flex items-center">
-                    <div class="flex items-center space-x-2">
-                        <a href="#" class="flex items-center">
-                            <img class="h-12 w-12" src="./logo.png" alt="TRUMP DOGE">
-                        </a>
-                        <span class="text-[#14F195] text-xl md:text-2xl font-bold tracking-wider">TRUMP DOGE</span>
-                    </div>
+                    <img class="h-12 w-12" src="./logo.png" alt="TRUMP DOGE">
+                    <span class="text-[#14F195] text-xl font-bold ml-2 hidden sm:inline">TRUMP DOGE</span>
                 </div>
-                
-                <!-- 桌面端菜单 -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">项目亮点</a>
-                    <a href="#tokenomics" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
-                    <a href="#roadmap" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">发展路线</a>
-                    <a href="#team" class="text-[#14F195] hover:text-[#64E9FF] transition-colors">核心团队</a>
-                    <div id="walletContainer" class="relative">
-                        <button id="connectWallet" class="connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-8 py-3 rounded-full hover:opacity-90 transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
-                            <span class="text-lg font-medium">连接钱包</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <div id="walletInfo" class="hidden absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-[#13091B] ring-1 ring-[#8364E8] ring-opacity-50 backdrop-blur-xl border border-white/10">
-                            <div class="py-1">
-                                <p id="walletAddress" class="px-4 py-3 text-sm text-[#14F195] truncate border-b border-[#8364E8]/20"></p>
-                                <button id="disconnectWallet" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-[#1D0F29] transition-colors">
-                                    断开连接
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+    
+                <!-- PC端导航链接 -->
+                <div class="hidden md:flex md:items-center space-x-8">
+                    <a href="#tokenomics" class="text-[#14F195] hover:text-[#64E9FF]">代币经济</a>
+                    <a href="#roadmap" class="text-[#14F195] hover:text-[#64E9FF]">发展路线</a>
+                    <a href="#faq" class="text-[#14F195] hover:text-[#64E9FF]">常见问题</a>
+                    <button id="connectWallet" class="bg-[#8364E8] hover:bg-[#64E9FF] text-white font-bold py-2 px-4 rounded-lg transition duration-300">连接钱包</button>
                 </div>
+    
+                <!-- 移动端菜单按钮 -->
+                <button id="mobile-menu-button" class="md:hidden text-[#14F195] hover:text-[#64E9FF]" aria-expanded="false">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+    
+            <!-- 移动端菜单 -->
+            <div id="mobile-menu" class="hidden md:hidden py-2">
+                <a href="#tokenomics" class="block text-[#14F195] hover:text-[#64E9FF] py-2">代币经济</a>
+                <a href="#roadmap" class="block text-[#14F195] hover:text-[#64E9FF] py-2">发展路线</a>
+                <a href="#faq" class="block text-[#14F195] hover:text-[#64E9FF] py-2">常见问题</a>
+                <button id="mobile-connect-wallet" class="w-full text-left bg-[#8364E8] hover:bg-[#64E9FF] text-white font-bold py-2 px-4 rounded-lg transition duration-300 mt-2">连接钱包</button>
+            </div>
+        </div>
+    </nav>
 
                 <!-- 移动端菜单按钮 -->
                 <div class="md:hidden flex items-center">
@@ -217,44 +216,7 @@
         <div class="stars"></div>
         <div class="light-effects"></div>
     </div>
-
-                <!-- 移动端菜单按钮 -->
-                <div class="md:hidden flex items-center">
-                    <button id="menuButton" class="text-[#14F195] hover:text-[#64E9FF] bg-[#1D0F29]/50 p-2 rounded-lg backdrop-blur-sm border border-[#8364E8]/20">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 移动端菜单面板 -->
-            <div id="mobileMenu" class="hidden md:hidden fixed top-[60px] left-0 right-0 bg-[#13091B]/95 backdrop-blur-xl border-b border-[#8364E8]/30">
-                <div class="px-2 pt-2 pb-3 space-y-1">
-                    <a href="#features" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">项目亮点</a>
-                    <a href="#tokenomics" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">代币经济</a>
-                    <a href="#roadmap" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">发展路线</a>
-                    <a href="#team" class="block px-3 py-2 text-[#14F195] hover:text-[#64E9FF] transition-colors">核心团队</a>
-                    <div class="px-3 py-2">
-                        <div id="mobileWalletContainer" class="relative">
-                            <button id="mobileConnectWallet" class="hidden w-full connect-wallet-btn bg-gradient-to-r from-[#8364E8] to-[#64E9FF] text-white px-4 py-2 rounded-full hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/20 border border-white/10">
-                                <span class="text-sm font-medium">连接钱包</span>
-                            </button>
-                            <div id="mobileWalletInfo" class="hidden w-full">
-                                <div class="w-full px-4 py-2 bg-[#1D0F29] rounded-lg">
-                                    <p id="mobileWalletAddress" class="text-sm text-[#14F195] truncate"></p>
-                                    <button id="mobileDisconnectWallet" class="mt-2 w-full text-left text-sm text-red-400 hover:text-red-300 transition-colors">
-                                        断开连接
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
+         
     <!-- 主要内容 -->
     <main class="container mx-auto px-4 pt-32 pb-8">
         <!-- 倒计时和捐赠表单卡片 -->

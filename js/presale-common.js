@@ -284,13 +284,34 @@ async function contribute() {
             'https://black-lingering-fog.solana-mainnet.quiknode.pro/4d7783df09fe07db6ce511d870249fc3eb642683/',
             'confirmed'
         );
-        const transaction = new solanaWeb3.Transaction();
+
         const wallet = walletInfo.provider;
+
+        // 验证余额
+        const balance = await connection.getBalance(wallet.publicKey);
+        const solBalance = balance / solanaWeb3.LAMPORTS_PER_SOL;
+        console.log('当前余额:', solBalance, 'SOL');
+        console.log('捐赠金额:', parseFloat(investAmount), 'SOL');
+        
+        if (solBalance < parseFloat(investAmount)) {
+            console.log('余额不足');
+            showCustomAlert(`余额不足，当前余额: ${solBalance.toFixed(4)} SOL`, null);
+            return;
+        }
+
+        // 检查是否有足够的手续费（0.00001 SOL）
+        if (solBalance < parseFloat(investAmount) + 0.00001) {
+            console.log('余额不足以支付手续费');
+            showCustomAlert('余额不足以支付交易手续费', null);
+            return;
+        }
+
+        const transaction = new solanaWeb3.Transaction();
         
         // 添加转账指令
         transaction.add(
             solanaWeb3.SystemProgram.transfer({
-                fromPubkey: new solanaWeb3.PublicKey(wallet.publicKey.toString()),
+                fromPubkey: wallet.publicKey,
                 toPubkey: new solanaWeb3.PublicKey(config.PRESALE_WALLET),
                 lamports: Math.floor(parseFloat(investAmount) * solanaWeb3.LAMPORTS_PER_SOL)
             })
@@ -313,7 +334,7 @@ async function contribute() {
         }
 
         transaction.recentBlockhash = blockhash;
-        transaction.feePayer = new solanaWeb3.PublicKey(wallet.publicKey.toString());
+        transaction.feePayer = wallet.publicKey;
 
         // 发送交易
         let signature;
@@ -589,6 +610,36 @@ document.addEventListener('DOMContentLoaded', () => {
     checkWalletStatus();
 });
 
+// 页面加载时初始化
+globalThis.window.addEventListener('DOMContentLoaded', () => {
+    try {
+        setupWalletEventListeners();
+        setupMobileMenu();
+        checkWalletStatus();
+    } catch (err) {
+        globalThis.console.error('初始化失败:', err);
+    }
+});
+
+// 设置移动端菜单
+function setupMobileMenu() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileConnectWallet = document.getElementById('mobile-connect-wallet');
+    
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+            mobileMenuButton.setAttribute('aria-expanded', !expanded);
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+
+    if (mobileConnectWallet) {
+        mobileConnectWallet.addEventListener('click', connectWallet);
+    }
+}
+
 // 查询推荐人的捐赠记录
 async function getReferralAmount(referrerAddress) {
     try {
@@ -684,17 +735,6 @@ function initializeEventListeners() {
         globalThis.console.error('初始化事件监听器失败:', err);
     }
 }
-
-// 页面加载时初始化
-globalThis.window.addEventListener('DOMContentLoaded', () => {
-    try {
-        setupWalletEventListeners();
-        checkWalletStatus();
-        initializeEventListeners();
-    } catch (err) {
-        globalThis.console.error('初始化失败:', err);
-    }
-});
 
 // 添加钱包事件监听
 function setupWalletEventListeners() {
